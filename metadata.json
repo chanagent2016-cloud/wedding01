@@ -1,0 +1,6 @@
+{
+  "name": "Wedding Gift Register & Guestbook",
+  "description": "Traditional Khmer style Wedding Gift and Guestbook System with Admin approval panel, read-only Host dashboard, and Guest contribution forms with simulated or real Supabase integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

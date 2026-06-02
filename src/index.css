@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&family=Siemreap&family=Cinzel:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-khmer-gold: #C29124;
+  --color-khmer-gold-dark: #9E7016;
+  --color-khmer-gold-light: #F7E6B8;
+  --color-khmer-red: #8F0517;
+  --color-khmer-red-dark: #5C000B;
+  --color-khmer-red-light: #C1162E;
+  --color-khmer-cream: #FCF8F2;
+  --color-khmer-cream-dark: #F2E9DE;
+  --color-khmer-cream-light: #FAFAF5;
+  --font-serif: "Cinzel", "Khmer OS Muol Light", Georgia, serif;
+  --font-sans: "Kantumruy Pro", "Siemreap", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-khmer-cream);
+  color: var(--color-khmer-red-dark);
+}
+
+/* Custom classical Khmer decorative elements/Kbach */
+.kbach-border-gold {
+  border: 4px double var(--color-khmer-gold);
+  position: relative;
+}
+
+.kbach-corner-gold::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  border-top: 2px solid var(--color-khmer-gold-dark);
+  border-left: 2px solid var(--color-khmer-gold-dark);
+}
+
+.kbach-corner-gold::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-bottom: 2px solid var(--color-khmer-gold-dark);
+  border-right: 2px solid var(--color-khmer-gold-dark);
+}
+
+.khmer-pattern-bg {
+  background-image: radial-gradient(#B89047 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.05;
+}
+
