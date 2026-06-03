@@ -491,15 +491,7 @@ export default function App() {
           )}
         </KbachFrame>
 
-        {/* Dynamic Warning Notification for Role privileges simulation constraint */}
-        {activeRole === 'user' && (
-          <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 text-xs text-slate-500 max-w-xl mx-auto flex items-start gap-2 leading-relaxed">
-            <CornerDownRight className="w-4 h-4 text-khmer-gold shrink-0 mt-0.5" />
-            <p>
-              <strong>សម្គាល់ដើម្បីតេស្ត៖</strong> ជាភ្ញៀវទូទៅ (Guest / User) អ្នកអាចកត់ចំណងដៃនិងសារជូនពរបានតែប៉ុណ្ណោះ។ បើចង់មើលក្តារស្ថិតិសរុបប្រាក់ និងផ្ទាំងយល់ព្រម (Approve) ភ្ញៀវជំនូន សូមចុចបើកប្រព័ន្ធសាកល្បងតួនាទីដោយចុចប៊ូតុង <strong>ទម្រង់សាកល្បងតួនាទី</strong> នៅជើងទំព័រ (Footer) ផ្នែកខាងក្រោមបំផុត។
-            </p>
-          </div>
-        )}
+
       </main>
 
       {/* Decorative Traditional Footer */}

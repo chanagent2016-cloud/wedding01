@@ -358,7 +358,7 @@ export const db = {
       amount: Number(item.amount),
       currency: item.currency,
       blessing: item.blessing || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
-      status: 'approved',
+      status: 'pending',
       created_at: new Date().toISOString()
     };
 
