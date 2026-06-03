@@ -390,29 +390,6 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
 
       {adminSubTab === 'ledger' ? (
         <div className="space-y-6" id="admin-ledger-subtab-content">
-          {/* Manual Insert Form Toggle & Dashboard Search filters bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-khmer-cream p-4 rounded-xl border border-khmer-gold/25 shadow-sm">
-        <h4 className="font-serif font-bold text-sm text-khmer-red-dark flex items-center gap-2">
-          <Clipboard className="w-4 h-4 text-khmer-gold" />
-          តារាងគ្រប់គ្រងហិរញ្ញវត្ថុ និងសារជូនពរ (Administrative Registry Ledger)
-        </h4>
-
-        <button
-          id="toggle-manual-add-form-btn"
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-khmer-red hover:bg-khmer-red-light text-white text-xs font-bold px-3.5 py-2 rounded shadow transition flex items-center gap-1.5"
-        >
-          {showAddForm ? (
-            <>
-              <X className="w-4 h-4" /> លាក់ផ្ទាំងកត់ចំណងដៃ (Cancel Entry)
-            </>
-          ) : (
-            <>
-              <UserPlus className="w-4 h-4" /> កត់ Envelope ដោយដៃ (Register Manual Cash)
-            </>
-          )}
-        </button>
-      </div>
 
       {/* Manual Cash Envelope Insertion Form */}
       {showAddForm && (
@@ -584,7 +561,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3.5">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
           {/* Inner Search input */}
-          <div className="md:col-span-6 relative">
+          <div className="md:col-span-5 relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               id="admin-search-input"
@@ -597,7 +574,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
           </div>
 
           {/* Relation filter selection dropdown */}
-          <div className="md:col-span-6">
+          <div className="md:col-span-4">
             <select
               id="admin-relation-filter"
               value={relationFilter}
@@ -609,6 +586,26 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 <option key={rel} value={rel}>{rel}</option>
               ))}
             </select>
+          </div>
+
+          {/* Toggle manual record add button */}
+          <div className="md:col-span-3 flex justify-end">
+            <button
+              id="toggle-manual-add-form-btn"
+              type="button"
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="w-full bg-khmer-red hover:bg-khmer-red-light text-white text-xs font-bold px-3 py-2 rounded shadow transition flex items-center justify-center gap-1.5"
+            >
+              {showAddForm ? (
+                <>
+                  <X className="w-3.5 h-3.5" /> លាក់ផ្ទាំងកត់ចំណងដៃ (Cancel)
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-3.5 h-3.5" /> កត់ Envelope ដោយដៃ (Manual Entry)
+                </>
+              )}
+            </button>
           </div>
         </div>
 

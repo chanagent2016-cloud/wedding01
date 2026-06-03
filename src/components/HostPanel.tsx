@@ -81,7 +81,7 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
             className="bg-khmer-red hover:bg-khmer-red-dark text-white font-bold font-sans px-3.5 py-1.5 rounded transition shadow-sm text-[10px] uppercase tracking-wider cursor-pointer"
             id="host-logout-action-btn"
           >
-            ចាកចេញ (Log Out)
+            {loggedInHost.username === 'admin' ? 'ត្រឡប់ទៅ Admin (Back to Admin)' : 'ចាកចេញ (Log Out)'}
           </button>
         </div>
       )}

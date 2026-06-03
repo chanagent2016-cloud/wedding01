@@ -395,7 +395,9 @@ export default function App() {
               <button
                 id="select-role-guest-btn"
                 onClick={() => {
-                  setActiveRole('user');
+                  if (activeRole !== 'admin') {
+                    setActiveRole('user');
+                  }
                   setActiveTab('guest');
                   setIsRoleChosen(true);
                 }}
@@ -417,7 +419,9 @@ export default function App() {
                 id="select-role-host-btn"
                 onClick={() => {
                   setActiveTab('host');
-                  if (loggedInHost) {
+                  if (activeRole === 'admin') {
+                    // Stay admin
+                  } else if (loggedInHost) {
                     setActiveRole('host');
                   } else {
                     setActiveRole('user');
@@ -497,12 +501,12 @@ export default function App() {
             )}
 
             {activeTab === 'host' && (
-              loggedInHost ? (
+              (loggedInHost || activeRole === 'admin') ? (
                 <HostPanel 
                   contributions={contributions} 
                   isLoading={isLoading} 
-                  loggedInHost={loggedInHost}
-                  onLogout={handleLogout}
+                  loggedInHost={loggedInHost || { id: 'admin-host', fullname: 'អ្នកគ្រប់គ្រង (Admin) [View Mode]', username: 'admin' }}
+                  onLogout={activeRole === 'admin' ? () => setActiveTab('admin') : handleLogout}
                 />
               ) : (
                 <div className="max-w-md mx-auto bg-white rounded-2xl border-2 border-khmer-gold p-6 shadow-xl relative overflow-hidden font-sans" id="host-auth-form-card">
