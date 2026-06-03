@@ -344,69 +344,71 @@ export default function App() {
         {/* Tab Selection Row and Frame (Hidden when user successfully submits their contribution) */}
         {(!guestSubmitted || activeRole !== 'user') && (
           <>
-            {/* Tab Selection Row (Visible based on privilege context to support comprehensive simulations) */}
-            <div className="bg-white rounded-xl shadow-md border border-slate-200/60 p-1.5 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap items-center justify-center gap-1.5" id="applet-tabs-container">
-              
-              {/* 1. Contribution entry tab */}
-              <button
-                id="tab-select-guest-form"
-                onClick={() => setActiveTab('guest')}
-                className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-                  activeTab === 'guest'
-                    ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-              >
-                <Compass className="w-4 h-4 text-khmer-gold shrink-0" />
-                <span className="truncate">✍️ ចុះឈ្មោះចំណងដៃ (Guest Form)</span>
-              </button>
-
-              {/* 2. Bride & Groom Presentation tab */}
-              {activeRole !== 'user' && (
+            {/* Tab Selection Row (Visible only for non-user roles who have multiple views) */}
+            {activeRole !== 'user' && (
+              <div className="bg-white rounded-xl shadow-md border border-slate-200/60 p-1.5 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap items-center justify-center gap-1.5" id="applet-tabs-container">
+                
+                {/* 1. Contribution entry tab */}
                 <button
-                  id="tab-select-host-panel"
-                  onClick={() => setActiveTab('host')}
+                  id="tab-select-guest-form"
+                  onClick={() => setActiveTab('guest')}
                   className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-                    activeTab === 'host'
+                    activeTab === 'guest'
                       ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
-                  <Heart className="w-4 h-4 text-khmer-gold-dark fill-khmer-gold shrink-0" />
-                  <span className="truncate">👰🤵 ក្តារជូនពរម្ចាស់ការ (Host View)</span>
+                  <Compass className="w-4 h-4 text-khmer-gold shrink-0" />
+                  <span className="truncate">✍️ ចុះឈ្មោះចំណងដៃ (Guest Form)</span>
                 </button>
-              )}
 
-              {/* 3. CRUD Admin Dashboard tab */}
-              {activeRole === 'admin' && (
-                <button
-                  id="tab-select-admin-panel"
-                  onClick={() => setActiveTab('admin')}
-                  className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-                    activeTab === 'admin'
-                      ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                  }`}
-                >
-                  <Bookmark className="w-4 h-4 text-khmer-gold shrink-0" />
-                  <span className="truncate">🔑 ការគ្រប់គ្រងហិរញ្ញវត្ថុ (Admin Dashboard)</span>
-                </button>
-              )}
+                {/* 2. Bride & Groom Presentation tab */}
+                {activeRole !== 'user' && (
+                  <button
+                    id="tab-select-host-panel"
+                    onClick={() => setActiveTab('host')}
+                    className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
+                      activeTab === 'host'
+                        ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                  >
+                    <Heart className="w-4 h-4 text-khmer-gold-dark fill-khmer-gold shrink-0" />
+                    <span className="truncate">👰🤵 ក្តារជូនពរម្ចាស់ការ (Host View)</span>
+                  </button>
+                )}
 
-              {/* 4. Log Out button when admin or host is authenticated */}
-              {activeRole !== 'user' && (
-                <button
-                  id="tab-logout-button"
-                  onClick={handleLogout}
-                  className="flex items-center justify-center md:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-850 border border-rose-200/50 transition-all w-full md:w-auto md:ml-auto cursor-pointer"
-                >
-                  <Lock className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                  <span className="truncate">ចាកចេញពីគណនី (Log Out)</span>
-                </button>
-              )}
+                {/* 3. CRUD Admin Dashboard tab */}
+                {activeRole === 'admin' && (
+                  <button
+                    id="tab-select-admin-panel"
+                    onClick={() => setActiveTab('admin')}
+                    className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
+                      activeTab === 'admin'
+                        ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                  >
+                    <Bookmark className="w-4 h-4 text-khmer-gold shrink-0" />
+                    <span className="truncate">🔑 ការគ្រប់គ្រងហិរញ្ញវត្ថុ (Admin Dashboard)</span>
+                  </button>
+                )}
+
+                {/* 4. Log Out button when admin or host is authenticated */}
+                {activeRole !== 'user' && (
+                  <button
+                    id="tab-logout-button"
+                    onClick={handleLogout}
+                    className="flex items-center justify-center md:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-850 border border-rose-200/50 transition-all w-full md:w-auto md:ml-auto cursor-pointer"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                    <span className="truncate">ចាកចេញពីគណនី (Log Out)</span>
+                  </button>
+                )}
 
 
-            </div>
+              </div>
+            )}
 
             {/* Dynamic Display of Core Sections inside classic Kbach frames */}
             <KbachFrame 
