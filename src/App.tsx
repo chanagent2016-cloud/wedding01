@@ -354,14 +354,14 @@ export default function App() {
             activeTab === 'guest' 
               ? 'បង្កាន់ដៃចំណងដៃអាពាហ៍ពិពាហ៍'
               : activeTab === 'host'
-              ? 'ម៉ែត្រដេលសន្លឹកបច្ច័យ និងសារជូនពរ'
+              ? 'បញ្ជីចំណងដៃ និងពាក្យជូនពរ ផ្សាយផ្ទាល់'
               : activeTab === 'admin'
               ? 'ផ្ទាំងគ្រប់គ្រងចំណូលចំណងដៃ (Admin Console)'
               : 'ការកំណត់តភ្ជាប់ទិន្នន័យ (Supabase Integration)'
           }
           subtitle={
             activeTab === 'guest'
-              ? 'KHMER WEDDING REGISTRY & BLESSING BOOK'
+              ? 'LIVE GUEST REGISTRATION & BLESSING BOOK'
               : activeTab === 'host'
               ? 'COUPLE BOARD AND APPROVED BLESSINGS'
               : activeTab === 'admin'
