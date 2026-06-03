@@ -55,6 +55,11 @@ export default function App() {
   // Toggle state to control visibility of developer role simulator bar
   const [showSimulator, setShowSimulator] = useState(false);
 
+  // Track if guest has submitted successfully in this session
+  const [guestSubmitted, setGuestSubmitted] = useState<boolean>(() => {
+    return localStorage.getItem('wedding_guest_submitted') === 'true';
+  });
+
   // Admin Login States
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [loginUsername, setLoginUsername] = useState('');
@@ -171,6 +176,10 @@ export default function App() {
   // Command to trigger refetches from child components
   const triggerRefresh = () => {
     setRefreshTrigger(prev => prev + 1);
+    if (activeRole === 'user') {
+      setGuestSubmitted(true);
+      localStorage.setItem('wedding_guest_submitted', 'true');
+    }
   };
 
   return (
@@ -293,7 +302,7 @@ export default function App() {
           </div>
 
           {/* Connected Sync Indicator status */}
-          <div className="mt-4 flex items-center gap-2 text-xs font-semibold">
+          <div className="mt-4 flex flex-col items-center gap-3 text-xs font-semibold">
             {isDbReal ? (
               <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-300 flex items-center gap-1.5">
                 <Database className="w-3.5 h-3.5 text-emerald-500" /> ទិន្នន័យ៖ អនឡាញពិត (Supabase Syncing ON)
@@ -303,193 +312,224 @@ export default function App() {
                 <Database className="w-3.5 h-3.5 text-amber-500" /> ទិន្នន័យ៖ មូលដ្ឋានសិប្បនិម្មិត (LocalStorage Mode)
               </span>
             )}
+
+            {guestSubmitted && activeRole === 'user' && (
+              <div className="mt-6 p-6 bg-emerald-50 border border-emerald-200 rounded-xl max-w-md mx-auto text-center space-y-2.5 animate-fade-in shadow-sm" id="guest-header-success-message">
+                <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto border border-emerald-300/60 shadow-inner">
+                  <Heart className="w-5 h-5 text-emerald-600 fill-emerald-500 animate-pulse" />
+                </div>
+                <h4 className="font-serif text-sm sm:text-base font-bold text-emerald-800">
+                  ទទួលបានព័ត៌មានជោគជ័យ!
+                </h4>
+                <p className="text-xs text-emerald-700 leading-relaxed font-sans font-medium px-2">
+                  សូមអរគុណយ៉ាងជ្រាលជ្រៅសម្រាប់ការចូលរួមចំណងដៃ និងសរសេរពាក្យជូនពរដ៏មានតម្លៃរបស់លោកអ្នក ទៅកាន់គូស្វាមីភរិយាថ្មី! ❤️
+                </p>
+                <div className="pt-2 border-t border-emerald-200/40">
+                  <button
+                    onClick={() => {
+                      setGuestSubmitted(false);
+                      localStorage.removeItem('wedding_guest_submitted');
+                    }}
+                    className="text-[10px] text-slate-500 hover:text-slate-800 underline font-bold transition duration-200"
+                    id="resubmit-from-header-btn"
+                  >
+                    កែប្រែ ឬបន្ថែមព័ត៌មានចំណងដៃជាថ្មី (Submit another)
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Tab Selection Row (Visible based on privilege context to support comprehensive simulations) */}
-        <div className="bg-white rounded-xl shadow-md border border-slate-200/60 p-1.5 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap items-center justify-center gap-1.5" id="applet-tabs-container">
-          
-          {/* 1. Contribution entry tab */}
-          <button
-            id="tab-select-guest-form"
-            onClick={() => setActiveTab('guest')}
-            className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-              activeTab === 'guest'
-                ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            <Compass className="w-4 h-4 text-khmer-gold shrink-0" />
-            <span className="truncate">✍️ ចុះឈ្មោះចំណងដៃ (Guest Form)</span>
-          </button>
+        {/* Tab Selection Row and Frame (Hidden when user successfully submits their contribution) */}
+        {(!guestSubmitted || activeRole !== 'user') && (
+          <>
+            {/* Tab Selection Row (Visible based on privilege context to support comprehensive simulations) */}
+            <div className="bg-white rounded-xl shadow-md border border-slate-200/60 p-1.5 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap items-center justify-center gap-1.5" id="applet-tabs-container">
+              
+              {/* 1. Contribution entry tab */}
+              <button
+                id="tab-select-guest-form"
+                onClick={() => setActiveTab('guest')}
+                className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
+                  activeTab === 'guest'
+                    ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <Compass className="w-4 h-4 text-khmer-gold shrink-0" />
+                <span className="truncate">✍️ ចុះឈ្មោះចំណងដៃ (Guest Form)</span>
+              </button>
 
-          {/* 2. Bride & Groom Presentation tab */}
-          {activeRole !== 'user' && (
-            <button
-              id="tab-select-host-panel"
-              onClick={() => setActiveTab('host')}
-              className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-                activeTab === 'host'
-                  ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
+              {/* 2. Bride & Groom Presentation tab */}
+              {activeRole !== 'user' && (
+                <button
+                  id="tab-select-host-panel"
+                  onClick={() => setActiveTab('host')}
+                  className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
+                    activeTab === 'host'
+                      ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <Heart className="w-4 h-4 text-khmer-gold-dark fill-khmer-gold shrink-0" />
+                  <span className="truncate">👰🤵 ក្តារជូនពរម្ចាស់ការ (Host View)</span>
+                </button>
+              )}
+
+              {/* 3. CRUD Admin Dashboard tab */}
+              {activeRole === 'admin' && (
+                <button
+                  id="tab-select-admin-panel"
+                  onClick={() => setActiveTab('admin')}
+                  className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
+                    activeTab === 'admin'
+                      ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <Bookmark className="w-4 h-4 text-khmer-gold shrink-0" />
+                  <span className="truncate">🔑 ការគ្រប់គ្រងហិរញ្ញវត្ថុ (Admin Dashboard)</span>
+                </button>
+              )}
+
+              {/* 4. Log Out button when admin or host is authenticated */}
+              {activeRole !== 'user' && (
+                <button
+                  id="tab-logout-button"
+                  onClick={handleLogout}
+                  className="flex items-center justify-center md:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-850 border border-rose-200/50 transition-all w-full md:w-auto md:ml-auto cursor-pointer"
+                >
+                  <Lock className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span className="truncate">ចាកចេញពីគណនី (Log Out)</span>
+                </button>
+              )}
+
+
+            </div>
+
+            {/* Dynamic Display of Core Sections inside classic Kbach frames */}
+            <KbachFrame 
+              title={
+                activeTab === 'guest' 
+                  ? 'បង្កាន់ដៃចំណងដៃអាពាហ៍ពិពាហ៍'
+                  : activeTab === 'host'
+                  ? 'បញ្ជីចំណងដៃ និងពាក្យជូនពរ ផ្សាយផ្ទាល់'
+                  : activeTab === 'admin'
+                  ? 'ផ្ទាំងគ្រប់គ្រងចំណូលចំណងដៃ (Admin Console)'
+                  : 'ការកំណត់តភ្ជាប់ទិន្នន័យ (Supabase Integration)'
+              }
+              subtitle={
+                activeTab === 'guest'
+                  ? 'LIVE GUEST REGISTRATION & BLESSING BOOK'
+                  : activeTab === 'host'
+                  ? 'COUPLE BOARD AND APPROVED BLESSINGS'
+                  : activeTab === 'admin'
+                  ? 'FULL PRIVILEGES CRUD MANAGEMENT & APPROVALS'
+                  : 'PLUG IN YOUR LIVE SUPABASE CLOUD DATABASE'
+              }
+              variant={activeTab === 'guest' ? 'gold' : 'parchment'}
             >
-              <Heart className="w-4 h-4 text-khmer-gold-dark fill-khmer-gold shrink-0" />
-              <span className="truncate">👰🤵 ក្តារជូនពរម្ចាស់ការ (Host View)</span>
-            </button>
-          )}
+              {activeTab === 'guest' && (
+                <GuestForm 
+                  onContributionSubmitted={triggerRefresh} 
+                  contributions={contributions}
+                  isLoading={isLoading}
+                />
+              )}
 
-          {/* 3. CRUD Admin Dashboard tab */}
-          {activeRole === 'admin' && (
-            <button
-              id="tab-select-admin-panel"
-              onClick={() => setActiveTab('admin')}
-              className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-                activeTab === 'admin'
-                  ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
-            >
-              <Bookmark className="w-4 h-4 text-khmer-gold shrink-0" />
-              <span className="truncate">🔑 ការគ្រប់គ្រងហិរញ្ញវត្ថុ (Admin Dashboard)</span>
-            </button>
-          )}
+              {activeTab === 'host' && (
+                loggedInHost ? (
+                  <HostPanel 
+                    contributions={contributions} 
+                    isLoading={isLoading} 
+                    loggedInHost={loggedInHost}
+                    onLogout={handleLogout}
+                  />
+                ) : (
+                  <div className="max-w-md mx-auto bg-white rounded-2xl border-2 border-khmer-gold p-6 shadow-xl relative overflow-hidden font-sans" id="host-auth-form-card">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-khmer-gold"></div>
+                    
+                    {/* Header Title decoration */}
+                    <div className="text-center mb-6">
+                      <div className="w-12 h-12 bg-khmer-red/5 rounded-full flex items-center justify-center mx-auto mb-2 border border-khmer-gold/35">
+                        <Lock className="w-5 h-5 text-khmer-gold" />
+                      </div>
+                      <h4 className="font-serif text-base font-bold text-khmer-red-dark">
+                        ផ្ទៀងផ្ទាត់គណនីម្ចាស់ដើមការ
+                      </h4>
+                      <p className="text-[9px] text-khmer-gold-dark font-sans uppercase tracking-widest font-bold mt-1">
+                        Wedding Host Authentication
+                      </p>
+                      <div className="w-16 h-0.5 bg-khmer-gold/40 mx-auto mt-2"></div>
+                    </div>
 
-          {/* 4. Log Out button when admin or host is authenticated */}
-          {activeRole !== 'user' && (
-            <button
-              id="tab-logout-button"
-              onClick={handleLogout}
-              className="flex items-center justify-center md:justify-start gap-2 px-3.5 sm:px-4 py-2.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-850 border border-rose-200/50 transition-all w-full md:w-auto md:ml-auto cursor-pointer"
-            >
-              <Lock className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-              <span className="truncate">ចាកចេញពីគណនី (Log Out)</span>
-            </button>
-          )}
+                    {hostLoginError && (
+                      <div className="mb-4 bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-lg text-xs leading-relaxed flex items-start gap-1.5" id="host-login-error">
+                        <span className="shrink-0">⚠️</span>
+                        <span>{hostLoginError}</span>
+                      </div>
+                    )}
 
+                    <form onSubmit={handleHostLoginSubmit} className="space-y-4">
+                      {/* Host Username */}
+                      <div className="space-y-1 text-left">
+                        <label className="block text-xs font-bold text-slate-700">
+                          ឈ្មោះគណនីម្ចាស់ការ (Host Username) *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={hostLoginUser}
+                          onChange={(e) => setHostLoginUser(e.target.value)}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-khmer-red/20 focus:border-khmer-red transition-all"
+                          placeholder="បញ្ចូលឈ្មោះគណនីដែលទទួលបានពី Admin"
+                          id="host-login-username"
+                        />
+                      </div>
 
-        </div>
+                      {/* Host Password */}
+                      <div className="space-y-1 text-left">
+                        <label className="block text-xs font-bold text-slate-700">
+                          ពាក្យសម្ងាត់ (Password) *
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={hostLoginPass}
+                          onChange={(e) => setHostLoginPass(e.target.value)}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-khmer-red/20 focus:border-khmer-red transition-all"
+                          placeholder="បញ្ចូលពាក្យសម្ងាត់"
+                          id="host-login-password"
+                        />
+                      </div>
 
-        {/* Dynamic Display of Core Sections inside classic Kbach frames */}
-        <KbachFrame 
-          title={
-            activeTab === 'guest' 
-              ? 'បង្កាន់ដៃចំណងដៃអាពាហ៍ពិពាហ៍'
-              : activeTab === 'host'
-              ? 'បញ្ជីចំណងដៃ និងពាក្យជូនពរ ផ្សាយផ្ទាល់'
-              : activeTab === 'admin'
-              ? 'ផ្ទាំងគ្រប់គ្រងចំណូលចំណងដៃ (Admin Console)'
-              : 'ការកំណត់តភ្ជាប់ទិន្នន័យ (Supabase Integration)'
-          }
-          subtitle={
-            activeTab === 'guest'
-              ? 'LIVE GUEST REGISTRATION & BLESSING BOOK'
-              : activeTab === 'host'
-              ? 'COUPLE BOARD AND APPROVED BLESSINGS'
-              : activeTab === 'admin'
-              ? 'FULL PRIVILEGES CRUD MANAGEMENT & APPROVALS'
-              : 'PLUG IN YOUR LIVE SUPABASE CLOUD DATABASE'
-          }
-          variant={activeTab === 'guest' ? 'gold' : 'parchment'}
-        >
-          {activeTab === 'guest' && (
-            <GuestForm 
-              onContributionSubmitted={triggerRefresh} 
-              contributions={contributions}
-              isLoading={isLoading}
-            />
-          )}
-
-          {activeTab === 'host' && (
-            loggedInHost ? (
-              <HostPanel 
-                contributions={contributions} 
-                isLoading={isLoading} 
-                loggedInHost={loggedInHost}
-                onLogout={handleLogout}
-              />
-            ) : (
-              <div className="max-w-md mx-auto bg-white rounded-2xl border-2 border-khmer-gold p-6 shadow-xl relative overflow-hidden font-sans" id="host-auth-form-card">
-                <div className="absolute top-0 inset-x-0 h-1 bg-khmer-gold"></div>
-                
-                {/* Header Title decoration */}
-                <div className="text-center mb-6">
-                  <div className="w-12 h-12 bg-khmer-red/5 rounded-full flex items-center justify-center mx-auto mb-2 border border-khmer-gold/35">
-                    <Lock className="w-5 h-5 text-khmer-gold" />
+                      <button
+                        type="submit"
+                        className="w-full py-2.5 px-4 text-xs font-bold text-white bg-khmer-red hover:bg-khmer-red-dark rounded-lg transition-all shadow-sm hover:shadow flex items-center justify-center gap-1.5 cursor-pointer pointer-events-auto"
+                        id="host-login-submit-btn"
+                      >
+                        <Lock className="w-4 h-4 text-khmer-gold" /> ចូលត្រួតពិនិត្យក្តារជូនពរ
+                      </button>
+                    </form>
                   </div>
-                  <h4 className="font-serif text-base font-bold text-khmer-red-dark">
-                    ផ្ទៀងផ្ទាត់គណនីម្ចាស់ដើមការ
-                  </h4>
-                  <p className="text-[9px] text-khmer-gold-dark font-sans uppercase tracking-widest font-bold mt-1">
-                    Wedding Host Authentication
-                  </p>
-                  <div className="w-16 h-0.5 bg-khmer-gold/40 mx-auto mt-2"></div>
-                </div>
+                )
+              )}
 
-                {hostLoginError && (
-                  <div className="mb-4 bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-lg text-xs leading-relaxed flex items-start gap-1.5" id="host-login-error">
-                    <span className="shrink-0">⚠️</span>
-                    <span>{hostLoginError}</span>
-                  </div>
-                )}
+              {activeTab === 'admin' && (
+                <AdminPanel 
+                  contributions={contributions} 
+                  isLoading={isLoading} 
+                  onRefresh={triggerRefresh} 
+                />
+              )}
 
-                <form onSubmit={handleHostLoginSubmit} className="space-y-4">
-                  {/* Host Username */}
-                  <div className="space-y-1 text-left">
-                    <label className="block text-xs font-bold text-slate-700">
-                      ឈ្មោះគណនីម្ចាស់ការ (Host Username) *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={hostLoginUser}
-                      onChange={(e) => setHostLoginUser(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-khmer-red/20 focus:border-khmer-red transition-all"
-                      placeholder="បញ្ចូលឈ្មោះគណនីដែលទទួលបានពី Admin"
-                      id="host-login-username"
-                    />
-                  </div>
-
-                  {/* Host Password */}
-                  <div className="space-y-1 text-left">
-                    <label className="block text-xs font-bold text-slate-700">
-                      ពាក្យសម្ងាត់ (Password) *
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      value={hostLoginPass}
-                      onChange={(e) => setHostLoginPass(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-khmer-red/20 focus:border-khmer-red transition-all"
-                      placeholder="បញ្ចូលពាក្យសម្ងាត់"
-                      id="host-login-password"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-2.5 px-4 text-xs font-bold text-white bg-khmer-red hover:bg-khmer-red-dark rounded-lg transition-all shadow-sm hover:shadow flex items-center justify-center gap-1.5 cursor-pointer pointer-events-auto"
-                    id="host-login-submit-btn"
-                  >
-                    <Lock className="w-4 h-4 text-khmer-gold" /> ចូលត្រួតពិនិត្យក្តារជូនពរ
-                  </button>
-                </form>
-              </div>
-            )
-          )}
-
-          {activeTab === 'admin' && (
-            <AdminPanel 
-              contributions={contributions} 
-              isLoading={isLoading} 
-              onRefresh={triggerRefresh} 
-            />
-          )}
-
-          {activeTab === 'settings' && (
-            <SupabaseSettings onConfigChanged={triggerRefresh} />
-          )}
-        </KbachFrame>
+              {activeTab === 'settings' && (
+                <SupabaseSettings onConfigChanged={triggerRefresh} />
+              )}
+            </KbachFrame>
+          </>
+        )}
 
 
       </main>
