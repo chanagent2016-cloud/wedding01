@@ -84,7 +84,7 @@ export function SupabaseSettings({ onConfigChanged }: SupabaseSettingsProps) {
   amount numeric NOT NULL,
   currency varchar(3) NOT NULL,
   blessing text,
-  status text DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+  status text DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected')),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

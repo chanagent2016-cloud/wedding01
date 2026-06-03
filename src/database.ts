@@ -146,13 +146,29 @@ function saveLocalContributions(data: WeddingContribution[]) {
 
 // Get Saved Supabase Config
 export function getSupabaseConfig(): SupabaseConfig {
+  const envUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
+  const envKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || '';
+
+  // If Vercel env variables are set, ALWAYS prioritize and use them with isEnabled: true
+  if (envUrl && envUrl.trim() !== '' && envKey && envKey.trim() !== '') {
+    return { url: envUrl.trim(), anonKey: envKey.trim(), isEnabled: true };
+  }
+
   const configStr = localStorage.getItem(SUPABASE_CONFIG_KEY);
   if (!configStr) {
     return { url: '', anonKey: '', isEnabled: false };
   }
   try {
-    return JSON.parse(configStr);
+    const parsed = JSON.parse(configStr) as SupabaseConfig;
+    // Fallback if parsed configuration has empty URL but we have environment variables
+    if (!parsed.url && envUrl && envKey) {
+      return { url: envUrl.trim(), anonKey: envKey.trim(), isEnabled: true };
+    }
+    return parsed;
   } catch (e) {
+    if (envUrl && envKey) {
+      return { url: envUrl.trim(), anonKey: envKey.trim(), isEnabled: true };
+    }
     return { url: '', anonKey: '', isEnabled: false };
   }
 }
@@ -185,6 +201,85 @@ export function initSupabase(): boolean {
 // Initialize on runtime import
 initSupabase();
 
+// Helper to sync local offline test entries and status updates to Supabase as soon as it is connected
+async function syncLocalDataToSupabase() {
+  if (!supabaseClient) return;
+  try {
+    const localStore = localStorage.getItem(DB_STORAGE_KEY);
+    if (!localStore) return;
+    const localList = JSON.parse(localStore) as WeddingContribution[];
+    if (!localList || localList.length === 0) return;
+
+    // Fetch existing contributions from Supabase
+    const { data: remoteData, error: fetchErr } = await supabaseClient
+      .from('wedding_contributions')
+      .select('guest_name, status, id');
+    
+    if (fetchErr) {
+      console.warn("Bypassing sync because Supabase table fetch failed or may not exist yet", fetchErr);
+      return;
+    }
+
+    const remoteList = remoteData || [];
+    const remoteNamesMap = new Map<string, { id: string; status: string }>();
+    for (const r of remoteList) {
+      if (r.guest_name) {
+        remoteNamesMap.set(r.guest_name.trim(), { id: r.id, status: r.status });
+      }
+    }
+
+    let hasChanges = false;
+
+    for (const localItem of localList) {
+      if (!localItem.guest_name) continue;
+      const guestNameClean = localItem.guest_name.trim();
+      const existingRemote = remoteNamesMap.get(guestNameClean);
+
+      if (existingRemote) {
+        // Name exists in Supabase. Update status if local status is 'approved' or different.
+        if (localItem.status !== existingRemote.status) {
+          console.log(`Sync: Updating ${guestNameClean} from local status "${localItem.status}"`);
+          const { error: updateErr } = await supabaseClient
+            .from('wedding_contributions')
+            .update({ status: localItem.status })
+            .eq('id', existingRemote.id);
+          
+          if (!updateErr) {
+            hasChanges = true;
+          }
+        }
+      } else {
+        // Entirely new record. Insert it into Supabase.
+        console.log(`Sync: Inserting new local contribution for "${guestNameClean}" into Supabase`);
+        const insertPayload = {
+          guest_name: localItem.guest_name,
+          relationship: localItem.relationship,
+          amount: Number(localItem.amount),
+          currency: localItem.currency,
+          blessing: localItem.blessing,
+          status: localItem.status
+        };
+
+        const { error: insertErr } = await supabaseClient
+          .from('wedding_contributions')
+          .insert([insertPayload]);
+        
+        if (!insertErr) {
+          hasChanges = true;
+        }
+      }
+    }
+
+    if (hasChanges) {
+      console.log("Offline local data synced to Supabase successfully!");
+      // Remove local storage to avoid duplicating this check
+      localStorage.removeItem(DB_STORAGE_KEY);
+    }
+  } catch (e) {
+    console.error("Auto-sync of local data to Supabase failed", e);
+  }
+}
+
 // Main API interface that handles real/simulation routing
 export const db = {
   // Returns whether Supabase is actively used
@@ -207,15 +302,38 @@ export const db = {
   async getContributions(): Promise<WeddingContribution[]> {
     if (supabaseClient) {
       try {
-        const { data, error } = await supabaseClient
-          .from('wedding_contributions')
-          .select('*')
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data as WeddingContribution[];
+        // Migrate offline client items to Supabase automatically
+        await syncLocalDataToSupabase();
+
+        let allData: any[] = [];
+        let from = 0;
+        const chunkSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data, error } = await supabaseClient
+            .from('wedding_contributions')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .range(from, from + chunkSize - 1);
+          
+          if (error) throw error;
+          
+          if (data && data.length > 0) {
+            allData = [...allData, ...data];
+            if (data.length < chunkSize) {
+              hasMore = false;
+            } else {
+              from += chunkSize;
+            }
+          } else {
+            hasMore = false;
+          }
+        }
+        return allData as WeddingContribution[];
       } catch (e) {
         console.error("Supabase fetch failed, fallback to local database", e);
-        // If query fails (e.g. table not created yet), return local contributions
+        // If query fails (e.g. table not created yet or credentials invalid), return local contributions
         return getLocalContributions();
       }
     } else {
@@ -240,14 +358,12 @@ export const db = {
       amount: Number(item.amount),
       currency: item.currency,
       blessing: item.blessing || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
-      status: 'pending',
+      status: 'approved',
       created_at: new Date().toISOString()
     };
 
     if (supabaseClient) {
       try {
-        // Omitting 'id' and 'created_at' to let Supabase generate them,
-        // unless they are explicitly typed. To match SQL, let Supabase handle PK.
         const insertPayload = {
           guest_name: newItem.guest_name,
           relationship: newItem.relationship,
@@ -259,10 +375,13 @@ export const db = {
         const { data, error } = await supabaseClient
           .from('wedding_contributions')
           .insert([insertPayload])
-          .select()
-          .single();
+          .select();
+        
         if (error) throw error;
-        return data as WeddingContribution;
+        if (data && data.length > 0) {
+          return data[0] as WeddingContribution;
+        }
+        return newItem;
       } catch (e) {
         console.error("Supabase insert failed, fallback to local storage save", e);
         // Fallback to local storage

@@ -351,7 +351,11 @@ export default function App() {
           variant={activeTab === 'guest' ? 'gold' : 'parchment'}
         >
           {activeTab === 'guest' && (
-            <GuestForm onContributionSubmitted={triggerRefresh} />
+            <GuestForm 
+              onContributionSubmitted={triggerRefresh} 
+              contributions={contributions}
+              isLoading={isLoading}
+            />
           )}
 
           {activeTab === 'host' && (

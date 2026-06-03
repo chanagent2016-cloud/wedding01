@@ -6,9 +6,12 @@
 import React, { useState } from 'react';
 import { db } from '../database';
 import { Gift, Heart, User, Sparkles, CheckCircle, ChevronRight, HelpCircle } from 'lucide-react';
+import { WeddingContribution } from '../types';
 
 interface GuestFormProps {
   onContributionSubmitted: () => void;
+  contributions?: WeddingContribution[];
+  isLoading?: boolean;
 }
 
 const RELATION_OPTIONS = [
@@ -29,7 +32,7 @@ const BLESSING_TEMPLATES = [
   'សូមឱ្យទទួលបានបុត្រាបុត្រីដ៏គួរឱ្យស្រឡាញ់ និងគ្រួសារមានសេចក្តីស្ងប់សុខជានិរន្តរ៍!'
 ];
 
-export function GuestForm({ onContributionSubmitted }: GuestFormProps) {
+export function GuestForm({ onContributionSubmitted, contributions = [], isLoading = false }: GuestFormProps) {
   const [guestName, setGuestName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [customRelation, setCustomRelation] = useState('');
@@ -362,6 +365,58 @@ export function GuestForm({ onContributionSubmitted }: GuestFormProps) {
           {!isSubmitting && <ChevronRight className="w-4 h-4 text-khmer-gold" />}
         </button>
       </form>
+
+      {/* Public Blessings Wall Section */}
+      <div className="border-t border-khmer-gold/20 pt-6 mt-8 space-y-4" id="public-blessings-wall-section">
+        <div className="flex items-center gap-1.5 pb-2 border-b border-khmer-gold/10">
+          <Sparkles className="w-4 h-4 text-khmer-gold fill-khmer-gold shrink-0" />
+          <h4 className="text-xs font-bold text-khmer-red-dark uppercase tracking-wider font-sans">
+            សៀវភៅមាសផ្ញើសារជូនពរ (Live Guest Book)
+          </h4>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-6 text-slate-400 text-xs">
+            កំពុងទាញយកពាក្យជូនពរ... (Loading congratulations...)
+          </div>
+        ) : contributions.filter(item => item.status === 'approved').length === 0 ? (
+          <div className="text-center py-8 text-xs text-slate-400 bg-khmer-cream/40 rounded-lg border border-dashed border-khmer-gold/20 font-sans">
+            មិនទាន់មានសារជូនពរចូលរួមនៅឡើយទេ។ សូមក្លាយជាអ្នកដំបូងដែលសរសេរជូនពរ!
+          </div>
+        ) : (
+          <div className="space-y-3 max-h-96 overflow-y-auto pr-1 select-none pointer-events-auto" id="public-blessings-cards-container">
+            {contributions
+              .filter(item => item.status === 'approved')
+              .map((item) => (
+                <div 
+                  key={item.id} 
+                  className="bg-white border border-khmer-gold/15 rounded-lg p-3.5 shadow-sm space-y-1.5 hover:border-khmer-gold/30 transition-all font-sans"
+                  id={`public-blessing-card-${item.id}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-khmer-red-dark text-xs block">
+                        {item.guest_name}
+                      </span>
+                      <span className="text-[10px] text-amber-800 font-medium">
+                        {item.relationship}
+                      </span>
+                    </div>
+                    <span className="text-[9px] text-slate-400 font-mono">
+                      {new Date(item.created_at).toLocaleDateString('km-KH', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className="bg-khmer-cream p-2.5 rounded text-xs italic text-slate-700 leading-relaxed border-l-2 border-khmer-gold/40">
+                    "{item.blessing}"
+                  </p>
+                  <div className="flex items-center gap-1 text-[9px] text-rose-500 font-semibold justify-end">
+                    <Heart className="w-2.5 h-2.5 fill-rose-500 text-rose-500" /> ពាក្យជូនពរដ៏មានតម្លៃ
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
