@@ -239,7 +239,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
 
     const parsedAmount = Number(editAmount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      setEditError('បច្ច័យត្រូវតែធំជាង ០! (Amount must be > 0)');
+      setEditError('ចំណងដៃត្រូវតែធំជាង ០! (Amount must be > 0)');
       return;
     }
 
@@ -314,7 +314,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
 
         {/* Total USD Approved */}
         <div className="bg-amber-50/40 border border-khmer-gold/30 rounded-xl p-3.5 shadow-sm text-center col-span-1 relative overflow-hidden">
-          <p className="text-[9px] uppercase font-bold text-amber-800 tracking-wider">បច្ច័យដុល្លារ ($ Approved)</p>
+          <p className="text-[9px] uppercase font-bold text-amber-800 tracking-wider">ចំណងដៃដុល្លារ ($ Approved)</p>
           <h5 className="text-xl font-bold text-emerald-700 flex items-center justify-center gap-0.5 mt-1 font-serif">
             <DollarSign className="w-4 h-4 text-emerald-500 shrink-0" />
             {isLoading ? '...' : totalUSDApproved.toLocaleString()}
@@ -323,7 +323,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
 
         {/* Total KHR Approved */}
         <div className="bg-rose-50/40 border border-rose-200/50 rounded-xl p-3.5 col-span-2 lg:col-span-1 shadow-sm text-center relative overflow-hidden">
-          <p className="text-[9px] uppercase font-bold text-khmer-red-light tracking-wider">បច្ច័យរៀល (៛ Approved)</p>
+          <p className="text-[9px] uppercase font-bold text-khmer-red-light tracking-wider">ចំណងដៃរៀល (៛ Approved)</p>
           <h5 className="text-lg md:text-xl font-bold text-khmer-red flex items-center justify-center gap-0.5 mt-1 font-serif">
             <Coins className="w-4 h-4 text-khmer-red-light shrink-0" />
             {isLoading ? '...' : totalKHRApproved.toLocaleString()}
@@ -482,7 +482,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 required
                 min="0.01"
                 step="any"
-                placeholder="ចំនួនបច្ច័យ"
+                placeholder="ចំនួនចំណងដៃ"
                 value={manualAmount}
                 onChange={(e) => setManualAmount(e.target.value)}
                 className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold"
@@ -662,7 +662,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                   <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
                     <th className="py-3 px-4 font-serif">ឈ្មោះភ្ញៀវ (Guest Name)</th>
                     <th className="py-3 px-4">ទំនាក់ទំនង (Relation)</th>
-                    <th className="py-3 px-4 text-right">ចំនួនទ្រព្យបច្ច័យ (Amount)</th>
+                    <th className="py-3 px-4 text-right">ចំនួនចំណងដៃ (Amount)</th>
                     <th className="py-3 px-4">សេចក្តីជូនពរ (Blessing Text)</th>
                     <th className="py-3 px-4 text-center">ស្ថានភាព (Status)</th>
                     <th className="py-3 px-4 text-center">ការគ្រប់គ្រង (Admin Actions)</th>
@@ -841,7 +841,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                       <span className="text-slate-700 font-semibold">{item.relationship}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-slate-400 block text-[9px] uppercase font-bold text-right">ចំនួនទ្រព្យបច្ច័យ</span>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold text-right">ចំនួនចំណងដៃ</span>
                       <span className="font-serif font-extrabold">
                         {item.currency === 'USD' ? (
                           <span className="text-sm text-emerald-600">{formatUSD(item.amount)}</span>
@@ -1140,7 +1140,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-8 space-y-1">
                   <label className="text-[11px] font-bold text-slate-500" htmlFor="edit-amount">
-                    ចំនួនបច្ច័យ *
+                    ចំនួនចំណងដៃ *
                   </label>
                   <input
                     id="edit-amount"

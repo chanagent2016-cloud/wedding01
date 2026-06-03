@@ -72,7 +72,7 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
           ផ្ទាំងព័ត៌មាន កូនកំលោះ-កូនក្រមុំ
         </h3>
         <p className="text-xs text-slate-500 font-sans">
-          ទិដ្ឋភាពជារួមនៃសន្លឹកបច្ច័យ និងពាក្យជូនពរដែលបានអនុម័តរួចរាល់ (View of Approved Greetings & Gifts)
+          ទិដ្ឋភាពជារួមនៃសន្លឹកចំណងដៃ និងពាក្យជូនពរដែលបានអនុម័តរួចរាល់ (View of Approved Greetings & Gifts)
         </p>
       </div>
 

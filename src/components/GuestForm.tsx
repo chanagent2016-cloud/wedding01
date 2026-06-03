@@ -70,7 +70,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
 
     const parsedAmount = Number(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      setValidationError('សូមបញ្ចូលចំនួនបច្ច័យឱ្យត្រឹមត្រូវ (ធំជាង 0)! (Please enter a valid gift amount greater than 0!)');
+      setValidationError('សូមបញ្ចូលចំនួនចំណងដៃឱ្យត្រឹមត្រូវ (ធំជាង 0)! (Please enter a valid gift amount greater than 0!)');
       return;
     }
 
@@ -140,7 +140,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-khmer-gold via-khmer-red to-khmer-gold"></div>
 
           <div className="text-xs uppercase tracking-widest text-khmer-gold font-bold mb-4 font-serif">
-            សន្លឹកបច្ច័យអាពាហ៍ពិពាហ៍ (Receipt Draft)
+            សន្លឹកចំណងដៃអាពាហ៍ពិពាហ៍ (Receipt Draft)
           </div>
 
           <div className="space-y-3.5 text-left text-sm">
@@ -259,7 +259,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
           {/* Amount input */}
           <div className="md:col-span-8 space-y-1.5">
             <label className="text-xs font-bold text-khmer-red-dark flex items-center gap-1.5" htmlFor="amount">
-              <Gift className="w-3.5 h-3.5 text-khmer-gold-dark" /> ចំនួនថវិកាបច្ច័យ <span className="text-red-500">*</span>
+              <Gift className="w-3.5 h-3.5 text-khmer-gold-dark" /> ចំនួនថវិកាចំណងដៃ <span className="text-red-500">*</span>
             </label>
             <input
               id="amount"
