@@ -36,6 +36,7 @@ export default function App() {
   // Current tab view within custom privileges
   const [activeTab, setActiveTab] = useState<'guest' | 'host' | 'admin' | 'settings'>(() => {
     const saved = localStorage.getItem('wedding_active_tab');
+    if (saved === 'settings') return 'guest';
     if (saved) return saved as any;
     const savedRole = localStorage.getItem('wedding_active_role');
     if (savedRole === 'admin') return 'admin';
@@ -344,21 +345,7 @@ export default function App() {
             </button>
           )}
 
-          {/* 4. Supabase Setup configurations tab */}
-          {activeRole === 'admin' && (
-            <button
-              id="tab-select-supabase-config"
-              onClick={() => setActiveTab('settings')}
-              className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-                activeTab === 'settings'
-                  ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
-            >
-              <Settings className="w-4 h-4 text-khmer-gold-dark shrink-0" />
-              <span className="truncate">⚙️ កំណត់ត្រា Supabase (DB Settings)</span>
-            </button>
-          )}
+
         </div>
 
         {/* Dynamic Display of Core Sections inside classic Kbach frames */}
