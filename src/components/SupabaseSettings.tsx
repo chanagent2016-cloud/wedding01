@@ -85,6 +85,8 @@ export function SupabaseSettings({ onConfigChanged }: SupabaseSettingsProps) {
   currency varchar(3) NOT NULL,
   blessing text,
   payment_method text DEFAULT 'cash',
+  attendance_type text DEFAULT 'remote',
+  guest_count integer DEFAULT 0,
   status text DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected')),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -244,10 +246,12 @@ CREATE POLICY "Allow public delete" ON wedding_contributions FOR DELETE USING (t
         <div className="mt-4 bg-amber-50 border border-amber-200 rounded p-3 text-[10px] space-y-1 text-amber-900 leading-normal">
           <p className="font-bold flex items-center gap-1">⚠️ ករណីធ្លាប់បង្កើតតារាងរួចហើយ (If table already exists)</p>
           <p>
-            ប្រសិនបើលោកអ្នកធ្លាប់បានបង្កើតតារាងក្នុង Supabase រួចហើយ កាលពីមុន សូមដំណើរការកូដខាងក្រោមនេះក្នុង SQL Editor ដើម្បីបន្ថែមជួរឈរ <b>payment_method</b> ដែលខ្វះខាត៖
+            ប្រសិនបើលោកអ្នកធ្លាប់បានបង្កើតតារាងក្នុង Supabase រួចហើយ កាលពីមុន សូមដំណើរការកូដខាងក្រោមនេះក្នុង SQL Editor ដើម្បីបន្ថែមជួរឈរ <b>payment_method</b>, <b>attendance_type</b> និង <b>guest_count</b> ដែលខ្វះខាត៖
           </p>
           <pre className="bg-amber-950 text-amber-100 font-mono p-2 rounded mt-1.5 select-all text-[9.5px] block border border-amber-300/45">
-            ALTER TABLE wedding_contributions ADD COLUMN IF NOT EXISTS payment_method text DEFAULT 'cash';
+ALTER TABLE wedding_contributions ADD COLUMN IF NOT EXISTS payment_method text DEFAULT 'cash';
+ALTER TABLE wedding_contributions ADD COLUMN IF NOT EXISTS attendance_type text DEFAULT 'remote';
+ALTER TABLE wedding_contributions ADD COLUMN IF NOT EXISTS guest_count integer DEFAULT 0;
           </pre>
         </div>
       </div>

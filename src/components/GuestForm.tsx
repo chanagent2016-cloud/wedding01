@@ -39,6 +39,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
   const [amount, setAmount] = useState<string>('');
   const [currency, setCurrency] = useState<'USD' | 'KHR'>('USD');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
+  const [attendanceType, setAttendanceType] = useState<'in_person' | 'remote'>('remote');
+  const [guestCount, setGuestCount] = useState<number>(0);
   const [blessing, setBlessing] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
@@ -47,6 +49,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
     currency: string;
     blessing: string;
     payment_method?: 'cash' | 'bank';
+    attendance_type?: 'in_person' | 'remote';
+    guest_count?: number;
   } | null>(null);
 
   // Validation state
@@ -85,7 +89,9 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
         amount: parsedAmount,
         currency: currency,
         blessing: blessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
-        payment_method: paymentMethod
+        payment_method: paymentMethod,
+        attendance_type: attendanceType,
+        guest_count: attendanceType === 'in_person' ? guestCount : 0
       });
 
       setSubmittedData({
@@ -93,7 +99,9 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
         amount: savedItem.amount,
         currency: savedItem.currency,
         blessing: savedItem.blessing,
-        payment_method: savedItem.payment_method
+        payment_method: savedItem.payment_method,
+        attendance_type: savedItem.attendance_type,
+        guest_count: savedItem.guest_count
       });
 
       // Clear form
@@ -103,6 +111,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
       setAmount('');
       setBlessing('');
       setPaymentMethod('cash');
+      setAttendanceType('remote');
+      setGuestCount(0);
 
       onContributionSubmitted();
     } catch (err) {
@@ -165,6 +175,14 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
                 </span>
               </div>
             )}
+            <div className="flex justify-between border-b border-dashed border-gray-200 pb-2 text-xs">
+              <span className="text-gray-500">វត្តមានការចូលរួម (Attendance):</span>
+              <span className="font-bold text-khmer-red-dark">
+                {submittedData.attendance_type === 'in_person' 
+                  ? `🤝 ចូលរួមផ្ទាល់ (${submittedData.guest_count || 1} នាក់)` 
+                  : '✉️ ចងដៃពីចម្ងាយ (Remote)'}
+              </span>
+            </div>
             <div className="pb-1 text-gray-500">ពាក្យជូនពរ (Blessing):</div>
             <div className="bg-khmer-cream p-3 rounded text-xs italic text-slate-700 leading-relaxed border-l-2 border-khmer-gold/60">
               "{submittedData.blessing}"
@@ -354,6 +372,91 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
               <span className="text-[11px] sm:text-xs">ប្រាក់តាមធនាគារ (Bank Transfer)</span>
             </button>
           </div>
+        </div>
+
+        {/* Attendance Option segment */}
+        <div className="space-y-1.5 border border-khmer-gold/15 bg-khmer-cream/20 p-4 rounded-xl">
+          <label className="text-xs font-bold text-khmer-red-dark block">
+            កំណត់វត្តមាននៃការចូលរួម (Attendance & Participation Status) <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              id="attendance-type-remote-btn"
+              type="button"
+              onClick={() => {
+                setAttendanceType('remote');
+                setGuestCount(0);
+              }}
+              className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer text-center ${
+                attendanceType === 'remote'
+                  ? 'border-khmer-gold bg-amber-50 text-khmer-red-dark font-bold shadow-md'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-khmer-gold/40'
+              }`}
+            >
+              <span className="text-lg">✉️</span>
+              <span className="text-[11px] sm:text-xs">ចងដៃពីចម្ងាយ (Remote Contribute)</span>
+            </button>
+            <button
+              id="attendance-type-in-person-btn"
+              type="button"
+              onClick={() => {
+                setAttendanceType('in_person');
+                if (guestCount === 0) setGuestCount(1);
+              }}
+              className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer text-center ${
+                attendanceType === 'in_person'
+                  ? 'border-khmer-gold bg-amber-50 text-khmer-red-dark font-bold shadow-md'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-khmer-gold/40'
+              }`}
+            >
+              <span className="text-lg">🤝</span>
+              <span className="text-[11px] sm:text-xs">ចូលរួមផ្ទាល់ (Attend in Person)</span>
+            </button>
+          </div>
+
+          {/* Guest count selector if in_person selection */}
+          {attendanceType === 'in_person' && (
+            <div className="pt-3 border-t border-khmer-gold/15 mt-3 animate-slide-down space-y-2">
+              <label className="text-xs font-bold text-khmer-red-dark block" htmlFor="custom-guest-count-input">
+                សូមបញ្ជាក់ចំនួនអ្នកចូលរួម៖ (If attending, how many people?) <span className="text-red-500">*</span>
+              </label>
+              
+              <div className="flex flex-wrap items-center gap-2">
+                {[1, 2, 3, 4, 5, 6].map((num) => (
+                  <button
+                    id={`guest-count-btn-${num}`}
+                    key={num}
+                    type="button"
+                    onClick={() => setGuestCount(num)}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all min-w-[50px] ${
+                      guestCount === num
+                        ? 'bg-khmer-red text-white border-khmer-red shadow-sm scale-105'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-khmer-gold/40'
+                    }`}
+                  >
+                    {num} នាក់
+                  </button>
+                ))}
+                
+                <div className="flex items-center gap-1 text-slate-600 text-xs font-bold ml-1">
+                  <span>ផ្សេងៗ៖</span>
+                  <input
+                    id="custom-guest-count-input"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={guestCount}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      if (val > 0) setGuestCount(val);
+                    }}
+                    className="w-14 text-center text-xs font-mono font-bold bg-white border border-slate-300 rounded-lg py-1 px-1 focus:outline-none focus:border-khmer-red text-khmer-red-dark"
+                  />
+                  <span>នាក់</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Blessing Message selection and write room */}

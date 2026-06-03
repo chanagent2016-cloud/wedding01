@@ -263,20 +263,25 @@ async function syncLocalDataToSupabase() {
           currency: localItem.currency,
           blessing: localItem.blessing,
           status: localItem.status,
-          payment_method: localItem.payment_method || 'cash'
+          payment_method: localItem.payment_method || 'cash',
+          attendance_type: localItem.attendance_type || 'remote',
+          guest_count: localItem.guest_count !== undefined ? Number(localItem.guest_count) : 0
         };
 
         let { error: insertErr } = await supabaseClient
           .from('wedding_contributions')
           .insert([insertPayload]);
         
-        // Dynamic fallback fallback if missing payment_method column
-        if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.code === '42703')) {
-          console.warn(`Sync Warning: Supabase is missing 'payment_method' column. Retrying insert for ${guestNameClean} without it.`);
-          delete insertPayload.payment_method;
+        // Dynamic fallback if missing newly added columns
+        if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.message?.includes('attendance_type') || insertErr.message?.includes('guest_count') || insertErr.code === '42703')) {
+          console.warn(`Sync Warning: Supabase table is missing advanced columns. Retrying fallback insert for ${guestNameClean}.`);
+          const fallbackPayload = { ...insertPayload };
+          delete fallbackPayload.payment_method;
+          delete fallbackPayload.attendance_type;
+          delete fallbackPayload.guest_count;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
-            .insert([insertPayload]);
+            .insert([fallbackPayload]);
           insertErr = retryResult.error;
         }
         
@@ -369,6 +374,8 @@ export const db = {
     currency: 'USD' | 'KHR';
     blessing: string;
     payment_method?: 'cash' | 'bank';
+    attendance_type?: 'in_person' | 'remote';
+    guest_count?: number;
   }): Promise<WeddingContribution> {
     const newItem: WeddingContribution = {
       id: supabaseClient ? '' : 'local-' + Math.random().toString(36).substr(2, 9),
@@ -379,7 +386,9 @@ export const db = {
       blessing: item.blessing || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
       status: 'pending',
       created_at: new Date().toISOString(),
-      payment_method: item.payment_method || 'cash'
+      payment_method: item.payment_method || 'cash',
+      attendance_type: item.attendance_type || 'remote',
+      guest_count: item.guest_count !== undefined ? Number(item.guest_count) : 0
     };
 
     if (supabaseClient) {
@@ -391,20 +400,25 @@ export const db = {
           currency: newItem.currency,
           blessing: newItem.blessing,
           status: newItem.status,
-          payment_method: newItem.payment_method
+          payment_method: newItem.payment_method,
+          attendance_type: newItem.attendance_type,
+          guest_count: newItem.guest_count
         };
         let { data, error } = await supabaseClient
           .from('wedding_contributions')
           .insert([insertPayload])
           .select();
         
-        // Resilience: fallback retry insert if database doesn't have the payment_method column
-        if (error && (error.message?.includes('payment_method') || error.code === '42703')) {
-          console.warn("Supabase insert warning: Missing payment_method column. Retrying insert without it.");
-          delete insertPayload.payment_method;
+        // Resilience: fallback retry insert if database doesn't have the payment_method, attendance_type or guest_count columns
+        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.code === '42703')) {
+          console.warn("Supabase insert warning: Missing columns. Retrying insert with fallback layout.");
+          const fallbackPayload = { ...insertPayload };
+          delete fallbackPayload.payment_method;
+          delete fallbackPayload.attendance_type;
+          delete fallbackPayload.guest_count;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
-            .insert([insertPayload])
+            .insert([fallbackPayload])
             .select();
           data = retryResult.data;
           error = retryResult.error;
@@ -466,6 +480,8 @@ export const db = {
     currency: 'USD' | 'KHR';
     blessing: string;
     payment_method?: 'cash' | 'bank';
+    attendance_type?: 'in_person' | 'remote';
+    guest_count?: number;
   }): Promise<boolean> {
     if (supabaseClient && !id.startsWith('local-')) {
       try {
@@ -474,11 +490,13 @@ export const db = {
           .update(updates)
           .eq('id', id);
         
-        // Resilience: Fallback if Supabase database lacks payment_method column
-        if (error && (error.message?.includes('payment_method') || error.code === '42703')) {
-          console.warn("Supabase update failed due to missing payment_method column. Retrying update without it.");
+        // Resilience: Fallback if Supabase database lacks new columns
+        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.code === '42703')) {
+          console.warn("Supabase update failed due to missing columns. Retrying update with safe local fallback values.");
           const safeUpdates = { ...updates };
           delete safeUpdates.payment_method;
+          delete safeUpdates.attendance_type;
+          delete safeUpdates.guest_count;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .update(safeUpdates)

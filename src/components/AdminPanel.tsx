@@ -96,6 +96,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const [manualAmount, setManualAmount] = useState('');
   const [manualCurrency, setManualCurrency] = useState<'USD' | 'KHR'>('USD');
   const [manualPaymentMethod, setManualPaymentMethod] = useState<'cash' | 'bank'>('cash');
+  const [manualAttendanceType, setManualAttendanceType] = useState<'in_person' | 'remote'>('remote');
+  const [manualGuestCount, setManualGuestCount] = useState<number>(0);
   const [manualBlessing, setManualBlessing] = useState('');
   const [manualError, setManualError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,6 +109,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const [editAmount, setEditAmount] = useState('');
   const [editCurrency, setEditCurrency] = useState<'USD' | 'KHR'>('USD');
   const [editPaymentMethod, setEditPaymentMethod] = useState<'cash' | 'bank'>('cash');
+  const [editAttendanceType, setEditAttendanceType] = useState<'in_person' | 'remote'>('remote');
+  const [editGuestCount, setEditGuestCount] = useState<number>(0);
   const [editBlessing, setEditBlessing] = useState('');
   const [editError, setEditError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -192,7 +196,9 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
         amount: parsedAmount,
         currency: manualCurrency,
         blessing: manualBlessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
-        payment_method: manualPaymentMethod
+        payment_method: manualPaymentMethod,
+        attendance_type: manualAttendanceType,
+        guest_count: manualAttendanceType === 'in_person' ? manualGuestCount : 0
       });
 
       // Auto approve manually input entries (they are input directly by the registry desk admin)
@@ -204,6 +210,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
       setManualRelationCustom('');
       setManualAmount('');
       setManualPaymentMethod('cash');
+      setManualAttendanceType('remote');
+      setManualGuestCount(0);
       setManualBlessing('');
       setShowAddForm(false);
       onRefresh();
@@ -227,6 +235,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
     setEditAmount(item.amount.toString());
     setEditCurrency(item.currency);
     setEditPaymentMethod(item.payment_method || 'cash');
+    setEditAttendanceType(item.attendance_type || 'remote');
+    setEditGuestCount(item.guest_count || 0);
     setEditBlessing(item.blessing);
     setEditError('');
   };
@@ -256,6 +266,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
         amount: parsedAmount,
         currency: editCurrency,
         payment_method: editPaymentMethod,
+        attendance_type: editAttendanceType,
+        guest_count: editAttendanceType === 'in_person' ? editGuestCount : 0,
         blessing: editBlessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!'
       };
 
@@ -498,7 +510,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
             </div>
 
             {/* Payment method selector */}
-            <div className="md:col-span-4 space-y-1">
+            <div className="md:col-span-3 space-y-1">
               <label className="text-[11px] font-bold text-slate-500" htmlFor="manual-payment-method">
                 វិធីសាស្ត្រប្រគល់ (Method)
               </label>
@@ -513,8 +525,50 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
               </select>
             </div>
 
+            {/* Attendance mode selector */}
+            <div className="md:col-span-3 space-y-1">
+              <label className="text-[11px] font-bold text-slate-500" htmlFor="manual-attendance-type">
+                វត្តមានចូលរួម (Attendance)
+              </label>
+              <select
+                id="manual-attendance-type"
+                value={manualAttendanceType}
+                onChange={(e) => {
+                  const val = e.target.value as 'in_person' | 'remote';
+                  setManualAttendanceType(val);
+                  if (val === 'remote') {
+                    setManualGuestCount(0);
+                  } else if (manualGuestCount === 0) {
+                    setManualGuestCount(1);
+                  }
+                }}
+                className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold h-[32px] cursor-pointer"
+              >
+                <option value="remote">✉️ ចងដៃពីចម្ងាយ (Remote)</option>
+                <option value="in_person">🤝 ចូលរួមផ្ទាល់ (In Person)</option>
+              </select>
+            </div>
+
+            {/* Guest count selector */}
+            {manualAttendanceType === 'in_person' && (
+              <div className="md:col-span-2 space-y-1 animate-slide-down">
+                <label className="text-[11px] font-bold text-slate-500" htmlFor="manual-guest-count">
+                  ចំនួនភ្ញៀវ (Guests)
+                </label>
+                <input
+                  id="manual-guest-count"
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={manualGuestCount}
+                  onChange={(e) => setManualGuestCount(Math.max(1, Number(e.target.value)))}
+                  className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold h-[32px]"
+                />
+              </div>
+            )}
+
             {/* Optional Blessing message text */}
-            <div className="md:col-span-7 space-y-1">
+            <div className={`${manualAttendanceType === 'in_person' ? 'md:col-span-4' : 'md:col-span-6'} space-y-1`}>
               <label className="text-[11px] font-bold text-slate-500" htmlFor="manual-blessing">
                 ពាក្យជូនពរ (Blessing Msg) - Optional
               </label>
@@ -524,7 +578,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 placeholder="សូមជូនពរឱ្យទទួលបានសុភមង្គល និងត្រជាក់ត្រជុំ!"
                 value={manualBlessing}
                 onChange={(e) => setManualBlessing(e.target.value)}
-                className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold"
+                className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold h-[32px]"
               />
             </div>
 
@@ -682,6 +736,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                     <th className="py-3 px-4 font-serif">ឈ្មោះភ្ញៀវ (Guest Name)</th>
                     <th className="py-3 px-4">ទំនាក់ទំនង (Relation)</th>
                     <th className="py-3 px-4">វិធីសាស្ត្រប្រគល់ (Method)</th>
+                    <th className="py-3 px-4">វត្តមាន (Attendance)</th>
                     <th className="py-3 px-4 text-right">ចំនួនចំណងដៃ (Amount)</th>
                     <th className="py-3 px-4">សេចក្តីជូនពរ (Blessing Text)</th>
                     <th className="py-3 px-4 text-center">ស្ថានភាព (Status)</th>
@@ -718,6 +773,19 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                             : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
                         }`}>
                           {item.payment_method === 'bank' ? '🏦 ធនាគារ (Bank)' : '💼 ក្នុងហឹប (Cash)'}
+                        </span>
+                      </td>
+
+                      {/* Attendance Column */}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                          item.attendance_type === 'in_person' 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                            : 'bg-indigo-50 text-indigo-700 border-indigo-200 border-dashed shadow-sm'
+                        }`}>
+                          {item.attendance_type === 'in_person' 
+                            ? `🤝 ផ្ទាល់ (${item.guest_count || 1} នាក់)` 
+                            : '✉️ ពីចម្ងាយ (Remote)'}
                         </span>
                       </td>
 
@@ -866,14 +934,14 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                   </div>
 
                   {/* Envelope metrics: relation and cash package */}
-                  <div className="flex items-center justify-between gap-4 text-xs font-sans">
+                  <div className="grid grid-cols-2 gap-3 text-xs font-sans pt-1 border-t border-slate-50">
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">ទំនាក់ទំនង</span>
-                      <span className="text-slate-700 font-semibold">{item.relationship}</span>
+                      <span className="text-slate-700 font-semibold truncate block text-[11px]">{item.relationship}</span>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">វិធីសាស្ត្រប្រគល់</span>
-                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded border mt-0.5 ${
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1 py-0.5 rounded border mt-0.5 ${
                         item.payment_method === 'bank' 
                           ? 'bg-blue-50 text-blue-700 border-blue-200' 
                           : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
@@ -881,13 +949,23 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                         {item.payment_method === 'bank' ? '🏦 ធនាគារ' : '💼 ក្នុងហឹប'}
                       </span>
                     </div>
-                    <div className="text-right">
+                    <div>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">វត្តមាន</span>
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1 py-0.5 rounded border mt-0.5 ${
+                        item.attendance_type === 'in_person' 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                          : 'bg-indigo-50 text-indigo-700 border-indigo-200 border-dashed shadow-sm'
+                      }`}>
+                        {item.attendance_type === 'in_person' ? `🤝 ផ្ទាល់ (${item.guest_count || 1} នាក់)` : '✉️ ពីចម្ងាយ'}
+                      </span>
+                    </div>
+                    <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold text-right">ចំនួនចំណងដៃ</span>
-                      <span className="font-serif font-extrabold">
+                      <span className="font-serif font-extrabold text-right block mt-0.5">
                         {item.currency === 'USD' ? (
-                          <span className="text-sm text-emerald-600">{formatUSD(item.amount)}</span>
+                          <span className="text-sm text-emerald-600 font-bold">{formatUSD(item.amount)}</span>
                         ) : (
-                          <span className="text-xs text-slate-800">{formatKHR(item.amount)}</span>
+                          <span className="text-xs text-slate-800 font-bold">{formatKHR(item.amount)}</span>
                         )}
                       </span>
                     </div>
@@ -1231,6 +1309,49 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                     <option value="bank">🏦 ប្រាក់តាមធនាគារ</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Attendance type and guest count editing */}
+              <div className="grid grid-cols-12 gap-3">
+                <div className="col-span-6 space-y-1">
+                  <label className="text-[11px] font-bold text-slate-500" htmlFor="edit-attendance-type">
+                    វត្តមានចូលរួម *
+                  </label>
+                  <select
+                    id="edit-attendance-type"
+                    value={editAttendanceType}
+                    onChange={(e) => {
+                      const val = e.target.value as 'in_person' | 'remote';
+                      setEditAttendanceType(val);
+                      if (val === 'remote') {
+                        setEditGuestCount(0);
+                      } else if (editGuestCount === 0) {
+                        setEditGuestCount(1);
+                      }
+                    }}
+                    className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-slate-800 focus:outline-none h-[32px] cursor-pointer"
+                  >
+                    <option value="remote">✉️ ចងដៃពីចម្ងាយ (Remote)</option>
+                    <option value="in_person">🤝 ចូលរួមផ្ទាល់ (In Person)</option>
+                  </select>
+                </div>
+
+                {editAttendanceType === 'in_person' && (
+                  <div className="col-span-6 space-y-1 animate-slide-down">
+                    <label className="text-[11px] font-bold text-slate-500" htmlFor="edit-guest-count">
+                      ចំនួនភ្ញៀវចូលរួមផ្ទាល់ *
+                    </label>
+                    <input
+                      id="edit-guest-count"
+                      type="number"
+                      min="1"
+                      max="50"
+                      value={editGuestCount}
+                      onChange={(e) => setEditGuestCount(Math.max(1, Number(e.target.value)))}
+                      className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded px-3 py-2 text-slate-800 focus:outline-none h-[32px]"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Blessing Text */}

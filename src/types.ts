@@ -13,6 +13,8 @@ export interface WeddingContribution {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   payment_method?: 'cash' | 'bank';
+  attendance_type?: 'in_person' | 'remote';
+  guest_count?: number;
 }
 
 export type UserRole = 'admin' | 'host' | 'user';
