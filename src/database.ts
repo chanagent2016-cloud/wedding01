@@ -82,6 +82,7 @@ const INITIAL_MOCK_DATA: WeddingContribution[] = [
     blessing: 'សូមជូនពរឱ្យក្មួយទាំងពីរទទួលបាននូវសេចក្តីសុខ សុភមង្គល និងស្រលាញ់គ្នាដល់ចាស់កោងខ្នង!',
     status: 'approved',
     created_at: new Date(Date.now() - 24 * 3600 * 1000 * 1.5).toISOString(),
+    payment_method: 'cash',
   },
   {
     id: 'mock-2',
@@ -92,6 +93,7 @@ const INITIAL_MOCK_DATA: WeddingContribution[] = [
     blessing: 'សូមឱ្យអាពាហ៍ពិពាហ៍របស់ក្មួយៗ ពោរពេញដោយសុភមង្គល សុខសន្តិភាព និងរកស៊ីមានបានគ្រប់ក្រុមគ្រួសារ!',
     status: 'approved',
     created_at: new Date(Date.now() - 24 * 3600 * 1000 * 1.2).toISOString(),
+    payment_method: 'bank',
   },
   {
     id: 'mock-3',
@@ -102,6 +104,7 @@ const INITIAL_MOCK_DATA: WeddingContribution[] = [
     blessing: 'រីករាយថ្ងៃអាពាហ៍ពិពាហ៍! សូមឱ្យស្រឡាញ់គ្នាស្មោះស្ម័គ្រ និងមានលុយប្រើពេញៗដៃគ្រប់ពេលណា!',
     status: 'approved',
     created_at: new Date(Date.now() - 24 * 3600 * 1000 * 0.8).toISOString(),
+    payment_method: 'cash',
   },
   {
     id: 'mock-4',
@@ -112,6 +115,7 @@ const INITIAL_MOCK_DATA: WeddingContribution[] = [
     blessing: 'សូមជូនពរកូនប្រុសកូនស្រីទាំងពីរ ឱ្យមានទ្រព្យស្តុកស្តម្ភ និងត្រជាក់ត្រជុំរៀបការរួចរកស៊ីកាន់តែមានៗ!',
     status: 'pending',
     created_at: new Date(Date.now() - 3600 * 1000 * 3).toISOString(),
+    payment_method: 'bank',
   },
   {
     id: 'mock-5',
@@ -122,6 +126,7 @@ const INITIAL_MOCK_DATA: WeddingContribution[] = [
     blessing: 'សូមជូនពរឱ្យគូស្រករដ៏ស្រស់ស្អាតទាំងពីរ មានសុភមង្គល និងជោគជ័យគ្រប់ការងារ!',
     status: 'pending',
     created_at: new Date(Date.now() - 1200 * 1000).toISOString(),
+    payment_method: 'cash',
   }
 ];
 
@@ -257,7 +262,8 @@ async function syncLocalDataToSupabase() {
           amount: Number(localItem.amount),
           currency: localItem.currency,
           blessing: localItem.blessing,
-          status: localItem.status
+          status: localItem.status,
+          payment_method: localItem.payment_method || 'cash'
         };
 
         const { error: insertErr } = await supabaseClient
@@ -350,6 +356,7 @@ export const db = {
     amount: number;
     currency: 'USD' | 'KHR';
     blessing: string;
+    payment_method?: 'cash' | 'bank';
   }): Promise<WeddingContribution> {
     const newItem: WeddingContribution = {
       id: supabaseClient ? '' : 'local-' + Math.random().toString(36).substr(2, 9),
@@ -359,7 +366,8 @@ export const db = {
       currency: item.currency,
       blessing: item.blessing || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
       status: 'pending',
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      payment_method: item.payment_method || 'cash'
     };
 
     if (supabaseClient) {
@@ -370,7 +378,8 @@ export const db = {
           amount: newItem.amount,
           currency: newItem.currency,
           blessing: newItem.blessing,
-          status: newItem.status
+          status: newItem.status,
+          payment_method: newItem.payment_method
         };
         const { data, error } = await supabaseClient
           .from('wedding_contributions')
@@ -432,6 +441,7 @@ export const db = {
     amount: number;
     currency: 'USD' | 'KHR';
     blessing: string;
+    payment_method?: 'cash' | 'bank';
   }): Promise<boolean> {
     if (supabaseClient && !id.startsWith('local-')) {
       try {

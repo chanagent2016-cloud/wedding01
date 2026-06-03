@@ -38,6 +38,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
   const [customRelation, setCustomRelation] = useState('');
   const [amount, setAmount] = useState<string>('');
   const [currency, setCurrency] = useState<'USD' | 'KHR'>('USD');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
   const [blessing, setBlessing] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
@@ -45,6 +46,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
     amount: number;
     currency: string;
     blessing: string;
+    payment_method?: 'cash' | 'bank';
   } | null>(null);
 
   // Validation state
@@ -82,14 +84,16 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
         relationship: relationText,
         amount: parsedAmount,
         currency: currency,
-        blessing: blessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!'
+        blessing: blessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
+        payment_method: paymentMethod
       });
 
       setSubmittedData({
         name: savedItem.guest_name,
         amount: savedItem.amount,
         currency: savedItem.currency,
-        blessing: savedItem.blessing
+        blessing: savedItem.blessing,
+        payment_method: savedItem.payment_method
       });
 
       // Clear form
@@ -98,6 +102,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
       setCustomRelation('');
       setAmount('');
       setBlessing('');
+      setPaymentMethod('cash');
 
       onContributionSubmitted();
     } catch (err) {
@@ -152,6 +157,14 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
               <span className="text-gray-500">ចំនួនចំណងដៃ (Gift Gift):</span>
               <span className="font-bold text-emerald-600">{formatValue(submittedData.amount, submittedData.currency)}</span>
             </div>
+            {submittedData.payment_method && (
+              <div className="flex justify-between border-b border-dashed border-gray-200 pb-2 text-xs">
+                <span className="text-gray-500">វិធីសាស្ត្រប្រគល់ (Payment Method):</span>
+                <span className="font-bold text-amber-800">
+                  {submittedData.payment_method === 'bank' ? '🏦 ប្រាក់តាមធនាគារ (Bank Transfer)' : '💼 សាច់ប្រាក់ក្នុងហឹប (Cash in box)'}
+                </span>
+              </div>
+            )}
             <div className="pb-1 text-gray-500">ពាក្យជូនពរ (Blessing):</div>
             <div className="bg-khmer-cream p-3 rounded text-xs italic text-slate-700 leading-relaxed border-l-2 border-khmer-gold/60">
               "{submittedData.blessing}"
@@ -305,6 +318,41 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
                 រៀល (៛ KHR)
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Payment Method selection segment */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-khmer-red-dark block">
+            វិធីសាស្ត្រប្រគល់ចំណងដៃ (Payment Method) <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              id="payment-method-cash-btn"
+              type="button"
+              onClick={() => setPaymentMethod('cash')}
+              className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1 cursor-pointer text-center ${
+                paymentMethod === 'cash'
+                  ? 'border-khmer-gold bg-amber-50 text-khmer-red-dark font-bold shadow-md'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-khmer-gold/40'
+              }`}
+            >
+              <span className="text-lg">💼</span>
+              <span className="text-[11px] sm:text-xs">សាច់ប្រាក់ក្នុងហឹប (Cash in box)</span>
+            </button>
+            <button
+              id="payment-method-bank-btn"
+              type="button"
+              onClick={() => setPaymentMethod('bank')}
+              className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1 cursor-pointer text-center ${
+                paymentMethod === 'bank'
+                  ? 'border-khmer-gold bg-amber-50 text-khmer-red-dark font-bold shadow-md'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-khmer-gold/40'
+              }`}
+            >
+              <span className="text-lg">🏦</span>
+              <span className="text-[11px] sm:text-xs">ប្រាក់តាមធនាគារ (Bank Transfer)</span>
+            </button>
           </div>
         </div>
 

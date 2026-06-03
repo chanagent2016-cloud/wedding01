@@ -12,6 +12,7 @@ export interface WeddingContribution {
   blessing: string;
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
+  payment_method?: 'cash' | 'bank';
 }
 
 export type UserRole = 'admin' | 'host' | 'user';

@@ -95,6 +95,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const [manualRelationCustom, setManualRelationCustom] = useState('');
   const [manualAmount, setManualAmount] = useState('');
   const [manualCurrency, setManualCurrency] = useState<'USD' | 'KHR'>('USD');
+  const [manualPaymentMethod, setManualPaymentMethod] = useState<'cash' | 'bank'>('cash');
   const [manualBlessing, setManualBlessing] = useState('');
   const [manualError, setManualError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -105,6 +106,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const [editRelation, setEditRelation] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [editCurrency, setEditCurrency] = useState<'USD' | 'KHR'>('USD');
+  const [editPaymentMethod, setEditPaymentMethod] = useState<'cash' | 'bank'>('cash');
   const [editBlessing, setEditBlessing] = useState('');
   const [editError, setEditError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -189,7 +191,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
         relationship: relationText,
         amount: parsedAmount,
         currency: manualCurrency,
-        blessing: manualBlessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!'
+        blessing: manualBlessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
+        payment_method: manualPaymentMethod
       });
 
       // Auto approve manually input entries (they are input directly by the registry desk admin)
@@ -200,6 +203,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
       setManualRelation('');
       setManualRelationCustom('');
       setManualAmount('');
+      setManualPaymentMethod('cash');
       setManualBlessing('');
       setShowAddForm(false);
       onRefresh();
@@ -222,6 +226,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
     }
     setEditAmount(item.amount.toString());
     setEditCurrency(item.currency);
+    setEditPaymentMethod(item.payment_method || 'cash');
     setEditBlessing(item.blessing);
     setEditError('');
   };
@@ -250,6 +255,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
         relationship: editRelation === 'Other' ? 'ភ្ញៀវកិត្តិយស' : editRelation,
         amount: parsedAmount,
         currency: editCurrency,
+        payment_method: editPaymentMethod,
         blessing: editBlessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!'
       };
 
@@ -472,7 +478,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
             )}
 
             {/* Cash Gift Amount */}
-            <div className={`space-y-1 ${manualRelation === 'Other' ? 'md:col-span-4' : 'md:col-span-4'}`}>
+            <div className={`space-y-1 ${manualRelation === 'Other' ? 'md:col-span-4' : 'md:col-span-5'}`}>
               <label className="text-[11px] font-bold text-slate-500" htmlFor="manual-amount">
                 ចំនួនទំហំថវិកា (Envelope Cash Amount) *
               </label>
@@ -512,6 +518,22 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                   KHR (៛)
                 </button>
               </div>
+            </div>
+
+            {/* Payment method selector */}
+            <div className="md:col-span-4 space-y-1">
+              <label className="text-[11px] font-bold text-slate-500" htmlFor="manual-payment-method">
+                វិធីសាស្ត្រប្រគល់ (Method)
+              </label>
+              <select
+                id="manual-payment-method"
+                value={manualPaymentMethod}
+                onChange={(e) => setManualPaymentMethod(e.target.value as any)}
+                className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold h-[32px] cursor-pointer"
+              >
+                <option value="cash">💼 សាច់ប្រាក់ក្នុងហឹប (Cash)</option>
+                <option value="bank">🏦 ប្រាក់តាមធនាគារ (Bank)</option>
+              </select>
             </div>
 
             {/* Optional Blessing message text */}
@@ -662,6 +684,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                   <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
                     <th className="py-3 px-4 font-serif">ឈ្មោះភ្ញៀវ (Guest Name)</th>
                     <th className="py-3 px-4">ទំនាក់ទំនង (Relation)</th>
+                    <th className="py-3 px-4">វិធីសាស្ត្រប្រគល់ (Method)</th>
                     <th className="py-3 px-4 text-right">ចំនួនចំណងដៃ (Amount)</th>
                     <th className="py-3 px-4">សេចក្តីជូនពរ (Blessing Text)</th>
                     <th className="py-3 px-4 text-center">ស្ថានភាព (Status)</th>
@@ -686,8 +709,19 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                       </td>
 
                       {/* Relationship Column */}
-                      <td className="py-3.5 px-4 text-slate-500 font-medium">
+                      <td className="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">
                         {item.relationship}
+                      </td>
+
+                      {/* Payment Method Column */}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                          item.payment_method === 'bank' 
+                            ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                            : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
+                        }`}>
+                          {item.payment_method === 'bank' ? '🏦 ធនាគារ (Bank)' : '💼 ក្នុងហឹប (Cash)'}
+                        </span>
                       </td>
 
                       {/* Gift Gift Amount Column */}
@@ -839,6 +873,16 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">ទំនាក់ទំនង</span>
                       <span className="text-slate-700 font-semibold">{item.relationship}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">វិធីសាស្ត្រប្រគល់</span>
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded border mt-0.5 ${
+                        item.payment_method === 'bank' 
+                          ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                          : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
+                      }`}>
+                        {item.payment_method === 'bank' ? '🏦 ធនាគារ' : '💼 ក្នុងហឹប'}
+                      </span>
                     </div>
                     <div className="text-right">
                       <span className="text-slate-400 block text-[9px] uppercase font-bold text-right">ចំនួនចំណងដៃ</span>
@@ -1136,9 +1180,9 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 </select>
               </div>
 
-              {/* Amount and Currency combo */}
+              {/* Amount, Currency and Payment Method combo */}
               <div className="grid grid-cols-12 gap-3">
-                <div className="col-span-8 space-y-1">
+                <div className="col-span-5 space-y-1">
                   <label className="text-[11px] font-bold text-slate-500" htmlFor="edit-amount">
                     ចំនួនចំណងដៃ *
                   </label>
@@ -1153,7 +1197,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                     className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded px-3 py-2 text-slate-800 focus:outline-none"
                   />
                 </div>
-                <div className="col-span-4 space-y-1">
+                <div className="col-span-3 space-y-1">
                   <label className="text-[11px] font-bold text-slate-500">
                     រូបិយប័ណ្ណ
                   </label>
@@ -1175,6 +1219,20 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                       KHR
                     </button>
                   </div>
+                </div>
+                <div className="col-span-4 space-y-1">
+                  <label className="text-[11px] font-bold text-slate-500" htmlFor="edit-payment-method">
+                    វិធីសាស្ត្រប្រគល់
+                  </label>
+                  <select
+                    id="edit-payment-method"
+                    value={editPaymentMethod}
+                    onChange={(e) => setEditPaymentMethod(e.target.value as any)}
+                    className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-slate-800 focus:outline-none h-[32px] cursor-pointer"
+                  >
+                    <option value="cash">💼 សាច់ប្រាក់ក្នុងហឹប</option>
+                    <option value="bank">🏦 ប្រាក់តាមធនាគារ</option>
+                  </select>
                 </div>
               </div>
 

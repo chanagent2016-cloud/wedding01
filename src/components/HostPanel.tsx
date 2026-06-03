@@ -17,6 +17,7 @@ interface HostPanelProps {
 export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: HostPanelProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRelationship, setFilterRelationship] = useState('');
+  const [filterPaymentMethod, setFilterPaymentMethod] = useState<'all' | 'cash' | 'bank'>('all');
 
   // Only approved entries are shown to Hosts to respect design & privacy of pending inputs
   const approvedList = contributions.filter(item => item.status === 'approved');
@@ -32,12 +33,32 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
     .filter(item => item.currency === 'KHR')
     .reduce((sum, item) => sum + item.amount, 0);
 
+  // Cash split
+  const cashUSD = approvedList
+    .filter(item => item.currency === 'USD' && (item.payment_method === 'cash' || !item.payment_method))
+    .reduce((sum, item) => sum + item.amount, 0);
+
+  const cashKHR = approvedList
+    .filter(item => item.currency === 'KHR' && (item.payment_method === 'cash' || !item.payment_method))
+    .reduce((sum, item) => sum + item.amount, 0);
+
+  // Bank split
+  const bankUSD = approvedList
+    .filter(item => item.currency === 'USD' && item.payment_method === 'bank')
+    .reduce((sum, item) => sum + item.amount, 0);
+
+  const bankKHR = approvedList
+    .filter(item => item.currency === 'KHR' && item.payment_method === 'bank')
+    .reduce((sum, item) => sum + item.amount, 0);
+
   // Filter logic
   const filteredList = approvedList.filter((item) => {
     const matchesSearch = item.guest_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.blessing.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRelation = filterRelationship === '' || item.relationship === filterRelationship;
-    return matchesSearch && matchesRelation;
+    const matchesPaymentMethod = filterPaymentMethod === 'all' || 
+                                 (item.payment_method || 'cash') === filterPaymentMethod;
+    return matchesSearch && matchesRelation && matchesPaymentMethod;
   });
 
   // Extract unique relationships for filter dropdown options
@@ -93,30 +114,46 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
         </div>
 
         {/* Total USD contributions */}
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border-2 border-khmer-gold rounded-xl p-5 shadow-md flex items-center gap-4 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border-2 border-khmer-gold rounded-xl p-5 shadow-md flex flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 khmer-pattern-bg pointer-events-none"></div>
-          <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500 shrink-0">
-            <DollarSign className="w-6 h-6 text-amber-600 font-bold" />
+          
+          <div className="flex items-center gap-4 relative z-10 w-full">
+            <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500 shrink-0">
+              <DollarSign className="w-6 h-6 text-amber-600 font-bold" />
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-[10px] uppercase font-bold text-amber-700 tracking-wider">ថវិកាសរុបជាដុល្លារ (Total Dollar Gift)</p>
+              <h4 className="text-3xl font-serif font-bold text-emerald-700" id="host-total-usd-sum">
+                {isLoading ? '...' : formatUSD(totalUSD)}
+              </h4>
+            </div>
           </div>
-          <div className="space-y-0.5 relative z-10">
-            <p className="text-[10px] uppercase font-bold text-amber-700 tracking-wider">ថវិកាសរុបជាដុល្លារ (Total Dollar Gift)</p>
-            <h4 className="text-3xl font-serif font-bold text-emerald-700" id="host-total-usd-sum">
-              {isLoading ? '...' : formatUSD(totalUSD)}
-            </h4>
+
+          <div className="mt-4 pt-3 border-t border-amber-200/60 flex items-center justify-between gap-1 text-[11px] font-semibold text-slate-600 relative z-10">
+            <span className="flex items-center gap-0.5">💼 ហឹប (Cash): <span className="font-serif text-amber-900 font-bold">{formatUSD(cashUSD)}</span></span>
+            <span className="flex items-center gap-0.5">🏦 ធនាគារ (Bank): <span className="font-serif text-blue-900 font-bold">{formatUSD(bankUSD)}</span></span>
           </div>
         </div>
 
         {/* Total KHR contributions */}
-        <div className="bg-gradient-to-br from-rose-50 to-rose-100/40 border-2 border-khmer-red/20 rounded-xl p-5 shadow-md flex items-center gap-4 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-rose-50 to-rose-100/40 border-2 border-khmer-red/20 rounded-xl p-5 shadow-md flex flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 khmer-pattern-bg pointer-events-none"></div>
-          <div className="w-12 h-12 bg-khmer-red/15 rounded-full flex items-center justify-center border border-khmer-red shrink-0">
-            <Coins className="w-6 h-6 text-khmer-red-light" />
+          
+          <div className="flex items-center gap-4 relative z-10 w-full">
+            <div className="w-12 h-12 bg-khmer-red/15 rounded-full flex items-center justify-center border border-khmer-red shrink-0">
+              <Coins className="w-6 h-6 text-khmer-red-light" />
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-[10px] uppercase font-bold text-khmer-red-light tracking-wider">ថវិកាសរុបជារៀល (Total Riel Gift)</p>
+              <h4 className="text-2xl md:text-3xl font-serif font-bold text-khmer-red" id="host-total-khr-sum">
+                {isLoading ? '...' : formatKHR(totalKHR)}
+              </h4>
+            </div>
           </div>
-          <div className="space-y-0.5 relative z-10">
-            <p className="text-[10px] uppercase font-bold text-khmer-red-light tracking-wider">ថវិកាសរុបជារៀល (Total Riel Gift)</p>
-            <h4 className="text-2xl md:text-3xl font-serif font-bold text-khmer-red" id="host-total-khr-sum">
-              {isLoading ? '...' : formatKHR(totalKHR)}
-            </h4>
+
+          <div className="mt-4 pt-3 border-t border-rose-200/50 flex items-center justify-between gap-1 text-[11px] font-semibold text-slate-600 relative z-10">
+            <span className="flex items-center gap-0.5">💼 ហឹប (Cash): <span className="font-serif text-amber-900 font-bold">{formatKHR(cashKHR)}</span></span>
+            <span className="flex items-center gap-0.5">🏦 ធនាគារ (Bank): <span className="font-serif text-blue-900 font-bold">{formatKHR(bankKHR)}</span></span>
           </div>
         </div>
       </div>
@@ -135,7 +172,7 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
           />
         </div>
 
-        <div className="w-full md:w-60">
+        <div className="w-full md:w-52">
           <select
             id="host-relation-filter"
             value={filterRelationship}
@@ -146,6 +183,19 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
             {relationships.map((rel) => (
               <option key={rel} value={rel}>{rel}</option>
             ))}
+          </select>
+        </div>
+
+        <div className="w-full md:w-52">
+          <select
+            id="host-payment-method-filter"
+            value={filterPaymentMethod}
+            onChange={(e) => setFilterPaymentMethod(e.target.value as any)}
+            className="w-full text-xs bg-white border border-khmer-gold/20 rounded-lg px-3 py-2.5 text-khmer-red-dark focus:outline-none focus:border-khmer-gold pointer-events-auto cursor-pointer"
+          >
+            <option value="all">គ្រប់វិធីសាស្ត្រទាំងអស់ (All Methods)</option>
+            <option value="cash">💼 សាច់ប្រាក់ក្នុងហឹប (Cash in box)</option>
+            <option value="bank">🏦 ប្រាក់តាមធនាគារ (Bank Transfer)</option>
           </select>
         </div>
       </div>
@@ -194,7 +244,16 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
                       <h5 className="font-bold text-khmer-red-dark text-sm md:text-base flex items-center gap-1">
                         {item.guest_name}
                       </h5>
-                      <p className="text-[10px] text-amber-800 font-medium">{item.relationship}</p>
+                      <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] text-amber-800 font-medium">{item.relationship}</span>
+                        <span className={`text-[8px] px-1.5 py-0.5 rounded font-extrabold ${
+                          item.payment_method === 'bank' 
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200' 
+                            : 'bg-amber-50 text-amber-700 border border-amber-200 shadow-sm'
+                        }`}>
+                          {item.payment_method === 'bank' ? '🏦 ធនាគារ (Bank)' : '💼 ក្នុងហឹប (Cash)'}
+                        </span>
+                      </div>
                     </div>
 
                     <span className="font-serif font-bold text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded border border-slate-200">
