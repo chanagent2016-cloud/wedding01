@@ -52,6 +52,9 @@ export default function App() {
   // Sync state for real/simulated database label in high-level header
   const [isDbReal, setIsDbReal] = useState(false);
 
+  // Toggle state to control visibility of developer role simulator bar
+  const [showSimulator, setShowSimulator] = useState(false);
+
   // Admin Login States
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [loginUsername, setLoginUsername] = useState('');
@@ -176,74 +179,76 @@ export default function App() {
       <div className="absolute inset-0 khmer-pattern-bg pointer-events-none"></div>
 
       {/* Privileged Simulation Switcher (Floating at the top for easy evaluators testing) */}
-      <div className="bg-gradient-to-r from-khmer-red-dark via-khmer-red to-khmer-red-dark border-b border-khmer-gold text-white relative z-20 py-3.5 px-4 shadow-md">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <div className="space-y-0.5">
-            <span className="text-[10px] sm:text-xs font-bold text-khmer-gold flex items-center justify-center sm:justify-start gap-1 uppercase tracking-wider font-serif">
-              <Sparkles className="w-4 h-4 fill-khmer-gold" /> ប្រព័ន្ធសាកល្បងតួនាទី (Role Simulation Toggle PANEL)
-            </span>
-            <p className="text-[10px] text-gray-200">
-              សាកល្បងចុចប្តូរតួនាទី (User Roles) ខាងស្តាំ ដើម្បីតេស្តលក្ខណៈពិសេសរបស់ប្រព័ន្ធនីមួយៗ
-            </p>
-          </div>
+      {showSimulator && (
+        <div className="bg-gradient-to-r from-khmer-red-dark via-khmer-red to-khmer-red-dark border-b border-khmer-gold text-white relative z-20 py-3.5 px-4 shadow-md">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <div className="space-y-0.5">
+              <span className="text-[10px] sm:text-xs font-bold text-khmer-gold flex items-center justify-center sm:justify-start gap-1 uppercase tracking-wider font-serif">
+                <Sparkles className="w-4 h-4 fill-khmer-gold" /> ប្រព័ន្ធសាកល្បងតួនាទី (Role Simulation Toggle PANEL)
+              </span>
+              <p className="text-[10px] text-gray-200">
+                សាកល្បងចុចប្តូរតួនាទី (User Roles) ខាងស្តាំ ដើម្បីតេស្តលក្ខណៈពិសេសរបស់ប្រព័ន្ធនីមួយៗ
+              </p>
+            </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-1.5 bg-black/40 p-1.5 rounded-lg border border-khmer-gold/30">
-            {/* User Guest Button Option */}
-            <button
-              id="role-switch-guest-btn"
-              onClick={() => {
-                setActiveRole('user');
-                setActiveTab('guest');
-              }}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
-                activeRole === 'user'
-                  ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <User className="w-3.5 h-3.5" /> ភ្ញៀវជំនូន (GUEST/USER)
-            </button>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 bg-black/40 p-1.5 rounded-lg border border-khmer-gold/30">
+              {/* User Guest Button Option */}
+              <button
+                id="role-switch-guest-btn"
+                onClick={() => {
+                  setActiveRole('user');
+                  setActiveTab('guest');
+                }}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
+                  activeRole === 'user'
+                    ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <User className="w-3.5 h-3.5" /> ភ្ញៀវជំនូន (GUEST/USER)
+              </button>
 
-            {/* Host Button Option */}
-            <button
-              id="role-switch-host-btn"
-              onClick={() => {
-                setActiveRole('host');
-                setActiveTab('host');
-              }}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
-                activeRole === 'host'
-                  ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" /> ម្ចាស់ដើមការ (HOST)
-            </button>
+              {/* Host Button Option */}
+              <button
+                id="role-switch-host-btn"
+                onClick={() => {
+                  setActiveRole('host');
+                  setActiveTab('host');
+                }}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
+                  activeRole === 'host'
+                    ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" /> ម្ចាស់ដើមការ (HOST)
+              </button>
 
-            {/* Admin Button Option */}
-            <button
-              id="role-switch-admin-btn"
-              onClick={() => {
-                if (activeRole !== 'admin') {
-                  setShowAdminLogin(true);
-                  setLoginUsername('');
-                  setLoginPassword('');
-                  setLoginError('');
-                } else {
-                  setActiveTab('admin');
-                }
-              }}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
-                activeRole === 'admin'
-                  ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
-                  : 'text-gray-300 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Key className="w-3.5 h-3.5" /> អ្នកគ្រប់គ្រង (ADMIN)
-            </button>
+              {/* Admin Button Option */}
+              <button
+                id="role-switch-admin-btn"
+                onClick={() => {
+                  if (activeRole !== 'admin') {
+                    setShowAdminLogin(true);
+                    setLoginUsername('');
+                    setLoginPassword('');
+                    setLoginError('');
+                  } else {
+                    setActiveTab('admin');
+                  }
+                }}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
+                  activeRole === 'admin'
+                    ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Key className="w-3.5 h-3.5" /> អ្នកគ្រប់គ្រង (ADMIN)
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Classical Decorative Wedding Layout Frame Container */}
       <main className="w-full max-w-6xl mx-auto px-4 md:px-6 pt-8 flex-grow space-y-8 relative z-10">
@@ -491,16 +496,22 @@ export default function App() {
           <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 text-xs text-slate-500 max-w-xl mx-auto flex items-start gap-2 leading-relaxed">
             <CornerDownRight className="w-4 h-4 text-khmer-gold shrink-0 mt-0.5" />
             <p>
-              <strong>សម្គាល់ដើម្បីតេស្ត៖</strong> ជាភ្ញៀវទូទៅ (Guest / User) អ្នកអាចកត់ចំណងដៃនិងសារជូនពរបានតែប៉ុណ្ណោះ។ បើចង់មើលក្តារស្ថិតិសរុបប្រាក់ និងផ្ទាំងយល់ព្រម (Approve) ភ្ញៀវជំនូន សូមចុចប្តូរតួនាទីទៅជា <strong>ម្ចាស់ដើមការ (Host)</strong> ឬ <strong>អ្នកគ្រប់គ្រង (Admin)</strong> នៅផ្ទាំងរំហូរពណ៌ក្រហមខាងលើផ្ទាល់តែម្តង។
+              <strong>សម្គាល់ដើម្បីតេស្ត៖</strong> ជាភ្ញៀវទូទៅ (Guest / User) អ្នកអាចកត់ចំណងដៃនិងសារជូនពរបានតែប៉ុណ្ណោះ។ បើចង់មើលក្តារស្ថិតិសរុបប្រាក់ និងផ្ទាំងយល់ព្រម (Approve) ភ្ញៀវជំនូន សូមចុចបើកប្រព័ន្ធសាកល្បងតួនាទីដោយចុចប៊ូតុង <strong>ទម្រង់សាកល្បងតួនាទី</strong> នៅជើងទំព័រ (Footer) ផ្នែកខាងក្រោមបំផុត។
             </p>
           </div>
         )}
       </main>
 
       {/* Decorative Traditional Footer */}
-      <footer className="text-center mt-auto pt-10 pb-6 text-[10px] text-slate-400 font-sans tracking-wide relative z-10">
+      <footer className="text-center mt-auto pt-10 pb-6 text-[10px] text-slate-400 font-sans tracking-wide relative z-10 flex flex-col items-center gap-1.5">
         <p>⚜️ កម្មវិធីចុះឈ្មោះចំណងដៃអាពាហ៍ពិពាហ៍ប្រពៃណីខ្មែរទំនើប ⚜️</p>
-        <p className="mt-1">© {new Date().getFullYear()} Sopheak & Thida Wedding Celebration. All Rights Reserved.</p>
+        <p className="mt-0.5">© {new Date().getFullYear()} Sopheak & Thida Wedding Celebration. All Rights Reserved.</p>
+        <button
+          onClick={() => setShowSimulator(prev => !prev)}
+          className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded text-[9px] uppercase font-bold transition-all border border-slate-200/60 cursor-pointer"
+        >
+          <Sparkles className="w-2.5 h-2.5 text-khmer-gold-dark" /> ទម្រង់សាកល្បងតួនាទី (Toggle Developer Tools)
+        </button>
       </footer>
 
       {/* Visual Accents - Khmer Borders & Corner Ornaments from Theme Design */}
