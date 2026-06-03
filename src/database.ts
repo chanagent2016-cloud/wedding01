@@ -256,7 +256,7 @@ async function syncLocalDataToSupabase() {
       } else {
         // Entirely new record. Insert it into Supabase.
         console.log(`Sync: Inserting new local contribution for "${guestNameClean}" into Supabase`);
-        const insertPayload = {
+        const insertPayload: any = {
           guest_name: localItem.guest_name,
           relationship: localItem.relationship,
           amount: Number(localItem.amount),
@@ -266,12 +266,24 @@ async function syncLocalDataToSupabase() {
           payment_method: localItem.payment_method || 'cash'
         };
 
-        const { error: insertErr } = await supabaseClient
+        let { error: insertErr } = await supabaseClient
           .from('wedding_contributions')
           .insert([insertPayload]);
         
+        // Dynamic fallback fallback if missing payment_method column
+        if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.code === '42703')) {
+          console.warn(`Sync Warning: Supabase is missing 'payment_method' column. Retrying insert for ${guestNameClean} without it.`);
+          delete insertPayload.payment_method;
+          const retryResult = await supabaseClient
+            .from('wedding_contributions')
+            .insert([insertPayload]);
+          insertErr = retryResult.error;
+        }
+        
         if (!insertErr) {
           hasChanges = true;
+        } else {
+          console.error(`Sync: Failed to insert contribution for ${guestNameClean}`, insertErr);
         }
       }
     }
@@ -372,7 +384,7 @@ export const db = {
 
     if (supabaseClient) {
       try {
-        const insertPayload = {
+        const insertPayload: any = {
           guest_name: newItem.guest_name,
           relationship: newItem.relationship,
           amount: newItem.amount,
@@ -381,11 +393,23 @@ export const db = {
           status: newItem.status,
           payment_method: newItem.payment_method
         };
-        const { data, error } = await supabaseClient
+        let { data, error } = await supabaseClient
           .from('wedding_contributions')
           .insert([insertPayload])
           .select();
         
+        // Resilience: fallback retry insert if database doesn't have the payment_method column
+        if (error && (error.message?.includes('payment_method') || error.code === '42703')) {
+          console.warn("Supabase insert warning: Missing payment_method column. Retrying insert without it.");
+          delete insertPayload.payment_method;
+          const retryResult = await supabaseClient
+            .from('wedding_contributions')
+            .insert([insertPayload])
+            .select();
+          data = retryResult.data;
+          error = retryResult.error;
+        }
+
         if (error) throw error;
         if (data && data.length > 0) {
           return data[0] as WeddingContribution;
@@ -445,10 +469,23 @@ export const db = {
   }): Promise<boolean> {
     if (supabaseClient && !id.startsWith('local-')) {
       try {
-        const { error } = await supabaseClient
+        let { error } = await supabaseClient
           .from('wedding_contributions')
           .update(updates)
           .eq('id', id);
+        
+        // Resilience: Fallback if Supabase database lacks payment_method column
+        if (error && (error.message?.includes('payment_method') || error.code === '42703')) {
+          console.warn("Supabase update failed due to missing payment_method column. Retrying update without it.");
+          const safeUpdates = { ...updates };
+          delete safeUpdates.payment_method;
+          const retryResult = await supabaseClient
+            .from('wedding_contributions')
+            .update(safeUpdates)
+            .eq('id', id);
+          error = retryResult.error;
+        }
+
         if (error) throw error;
         return true;
       } catch (e) {

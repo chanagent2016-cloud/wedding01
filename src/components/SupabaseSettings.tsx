@@ -84,6 +84,7 @@ export function SupabaseSettings({ onConfigChanged }: SupabaseSettingsProps) {
   amount numeric NOT NULL,
   currency varchar(3) NOT NULL,
   blessing text,
+  payment_method text DEFAULT 'cash',
   status text DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected')),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -238,6 +239,17 @@ CREATE POLICY "Allow public delete" ON wedding_contributions FOR DELETE USING (t
         <pre className="bg-gray-900 text-gray-100 text-[10px] font-mono rounded p-3 overflow-x-auto max-h-48 border border-white/10 select-all leading-tight">
           {sqlSchema}
         </pre>
+
+        {/* Missing Column Fix Notice */}
+        <div className="mt-4 bg-amber-50 border border-amber-200 rounded p-3 text-[10px] space-y-1 text-amber-900 leading-normal">
+          <p className="font-bold flex items-center gap-1">⚠️ ករណីធ្លាប់បង្កើតតារាងរួចហើយ (If table already exists)</p>
+          <p>
+            ប្រសិនបើលោកអ្នកធ្លាប់បានបង្កើតតារាងក្នុង Supabase រួចហើយ កាលពីមុន សូមដំណើរការកូដខាងក្រោមនេះក្នុង SQL Editor ដើម្បីបន្ថែមជួរឈរ <b>payment_method</b> ដែលខ្វះខាត៖
+          </p>
+          <pre className="bg-amber-950 text-amber-100 font-mono p-2 rounded mt-1.5 select-all text-[9.5px] block border border-amber-300/45">
+            ALTER TABLE wedding_contributions ADD COLUMN IF NOT EXISTS payment_method text DEFAULT 'cash';
+          </pre>
+        </div>
       </div>
     </div>
   );
