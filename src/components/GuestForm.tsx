@@ -32,6 +32,9 @@ const BLESSING_TEMPLATES = [
   'សូមឱ្យទទួលបានបុត្រាបុត្រីដ៏គួរឱ្យស្រឡាញ់ និងគ្រួសារមានសេចក្តីស្ងប់សុខជានិរន្តរ៍!'
 ];
 
+const USD_PRESETS = [25, 30, 40, 50, 70, 100];
+const KHR_PRESETS = [120000, 150000, 200000, 300000, 400000, 500000];
+
 export function GuestForm({ onContributionSubmitted, contributions = [], isLoading = false }: GuestFormProps) {
   const [guestName, setGuestName] = useState('');
   const [relationship, setRelationship] = useState('');
@@ -303,6 +306,44 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
               onChange={(e) => setAmount(e.target.value)}
               className="w-full text-sm font-semibold bg-white border border-khmer-gold/30 rounded-lg px-4 py-2.5 text-khmer-red-dark placeholder-slate-400 focus:outline-none focus:border-khmer-gold focus:ring-1 focus:ring-khmer-gold"
             />
+            {/* Cash Presets */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1.5" id="guest-cash-presets-container">
+              <span className="text-[10px] text-khmer-gold-dark font-bold">ជ្រើសរើសរហ័ស (Quick Select):</span>
+              {currency === 'USD' && 
+                USD_PRESETS.map((val) => (
+                  <button
+                    id={`preset-usd-${val}`}
+                    key={val}
+                    type="button"
+                    onClick={() => setAmount(val.toString())}
+                    className={`px-2 py-1 text-[11px] rounded border font-bold transition ${
+                      Number(amount) === val
+                        ? 'bg-khmer-red text-white border-khmer-red shadow-[0_1px_3px_rgba(0,0,0,0.15)] scale-105'
+                        : 'bg-white text-slate-600 border-khmer-gold/20 hover:border-khmer-gold/50 hover:bg-amber-50/20'
+                    }`}
+                  >
+                    ${val}
+                  </button>
+                ))
+              }
+              {currency === 'KHR' && 
+                KHR_PRESETS.map((val) => (
+                  <button
+                    id={`preset-khr-${val}`}
+                    key={val}
+                    type="button"
+                    onClick={() => setAmount(val.toString())}
+                    className={`px-2 py-1 text-[11px] rounded border font-bold transition ${
+                      Number(amount) === val
+                        ? 'bg-khmer-red text-white border-khmer-red shadow-[0_1px_3px_rgba(0,0,0,0.15)] scale-105'
+                        : 'bg-white text-slate-600 border-khmer-gold/20 hover:border-khmer-gold/50 hover:bg-amber-50/20'
+                    }`}
+                  >
+                    {(val / 1000)}k (៛{(val).toLocaleString()})
+                  </button>
+                ))
+              }
+            </div>
           </div>
 
           {/* Currency selection segment */}

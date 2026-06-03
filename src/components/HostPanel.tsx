@@ -25,6 +25,10 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
   // Calculate Totals on approved list
   const totalApprovedGuests = approvedList.length;
 
+  const totalSittingGuests = approvedList
+    .filter(item => item.attendance_type === 'in_person')
+    .reduce((sum, item) => sum + (item.guest_count || 1), 0);
+
   const totalUSD = approvedList
     .filter(item => item.currency === 'USD')
     .reduce((sum, item) => sum + item.amount, 0);
@@ -98,7 +102,7 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
       </div>
 
       {/* Bento Grid Counters with Luxury Traditional Style */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Total Guest Registry */}
         <div className="bg-white border-2 border-khmer-gold/30 rounded-xl p-5 shadow-md flex items-center gap-4 relative overflow-hidden">
           <div className="absolute inset-0 khmer-pattern-bg pointer-events-none"></div>
@@ -106,9 +110,23 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
             <Users className="w-6 h-6 text-khmer-gold-dark" />
           </div>
           <div className="space-y-0.5 relative z-10">
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">ចំនួនភ្ញៀវជូនពរ (Approved Guests)</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">ចំនួនសំបុត្រ (Total Envelopes)</p>
             <h4 className="text-3xl font-serif font-bold text-khmer-red-dark" id="host-total-guests-count">
-              {isLoading ? '...' : totalApprovedGuests} <span className="text-xs font-sans font-medium text-slate-400">នាក់ (People)</span>
+              {isLoading ? '...' : totalApprovedGuests} <span className="text-xs font-sans font-medium text-slate-400">សន្លឹក (Envelopes)</span>
+            </h4>
+          </div>
+        </div>
+
+        {/* Total Sitting Table Guests */}
+        <div className="bg-white border-2 border-khmer-gold/30 rounded-xl p-5 shadow-md flex items-center gap-4 relative overflow-hidden">
+          <div className="absolute inset-0 khmer-pattern-bg pointer-events-none"></div>
+          <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center border border-emerald-300 shrink-0">
+            <span className="text-xl">🤝</span>
+          </div>
+          <div className="space-y-0.5 relative z-10">
+            <p className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">ចំនួនភ្ញៀវចូលអង្គុយតុ (Sitting Guests)</p>
+            <h4 className="text-3xl font-serif font-bold text-emerald-600" id="host-total-sitting-guests">
+              {isLoading ? '...' : totalSittingGuests} <span className="text-xs font-sans font-medium text-emerald-500">នាក់ (People)</span>
             </h4>
           </div>
         </div>

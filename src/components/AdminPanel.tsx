@@ -24,6 +24,9 @@ import {
   UserPlus
 } from 'lucide-react';
 
+const USD_PRESETS = [25, 30, 40, 50, 70, 100];
+const KHR_PRESETS = [120000, 150000, 200000, 300000, 400000, 500000];
+
 interface AdminPanelProps {
   contributions: WeddingContribution[];
   isLoading: boolean;
@@ -146,6 +149,10 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const totalKHRApproved = contributions
     .filter(item => item.status === 'approved' && item.currency === 'KHR')
     .reduce((sum, item) => sum + item.amount, 0);
+
+  const totalSittingGuestsApproved = contributions
+    .filter(item => item.status === 'approved' && item.attendance_type === 'in_person')
+    .reduce((sum, item) => sum + (item.guest_count || 1), 0);
 
   // Quick single-click approvals/rejections
   const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
@@ -302,10 +309,10 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   return (
     <div className="space-y-6 animate-fade-in" id="admin-panel-container">
       {/* Dynamic Dashboard Scoreboards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
         {/* Total Registered */}
         <div className="bg-white border border-khmer-gold/20 rounded-xl p-3.5 shadow-sm text-center relative overflow-hidden">
-          <p className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">ភ្ញៀវសរុប (Total Registered)</p>
+          <p className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">សំបុត្រទាំងអស់ (Total Envelopes)</p>
           <h5 className="text-xl md:text-2xl font-bold text-slate-800 flex items-center justify-center gap-1.5 mt-1 font-serif">
             <Users className="w-4 h-4 text-slate-400" />
             {isLoading ? '...' : totalGuests}
@@ -330,8 +337,17 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
           </h5>
         </div>
 
+        {/* Total Sitting Table Guests Approved */}
+        <div className="bg-white border border-emerald-300/30 rounded-xl p-3.5 shadow-sm text-center relative overflow-hidden">
+          <p className="text-[9px] uppercase font-bold text-emerald-800 tracking-wider">ភ្ញៀវចូលតុ (Sitting Guests)</p>
+          <h5 className="text-xl md:text-2xl font-bold text-emerald-600 flex items-center justify-center gap-1.5 mt-1 font-serif">
+            <span className="text-sm">🤝</span>
+            {isLoading ? '...' : totalSittingGuestsApproved}
+          </h5>
+        </div>
+
         {/* Total USD Approved */}
-        <div className="bg-amber-50/40 border border-khmer-gold/30 rounded-xl p-3.5 shadow-sm text-center col-span-1 relative overflow-hidden">
+        <div className="bg-amber-50/40 border border-khmer-gold/30 rounded-xl p-3.5 shadow-sm text-center relative overflow-hidden">
           <p className="text-[9px] uppercase font-bold text-amber-800 tracking-wider">ចំណងដៃដុល្លារ ($ Approved)</p>
           <h5 className="text-xl font-bold text-emerald-700 flex items-center justify-center gap-0.5 mt-1 font-serif">
             <DollarSign className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -340,7 +356,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
         </div>
 
         {/* Total KHR Approved */}
-        <div className="bg-rose-50/40 border border-rose-200/50 rounded-xl p-3.5 col-span-2 lg:col-span-1 shadow-sm text-center relative overflow-hidden">
+        <div className="bg-rose-50/40 border border-rose-200/50 rounded-xl p-3.5 shadow-sm text-center relative overflow-hidden">
           <p className="text-[9px] uppercase font-bold text-khmer-red-light tracking-wider">ចំណងដៃរៀល (៛ Approved)</p>
           <h5 className="text-lg md:text-xl font-bold text-khmer-red flex items-center justify-center gap-0.5 mt-1 font-serif">
             <Coins className="w-4 h-4 text-khmer-red-light shrink-0" />
@@ -482,6 +498,43 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 onChange={(e) => setManualAmount(e.target.value)}
                 className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded px-3 py-2 text-khmer-red-dark focus:outline-none focus:border-khmer-gold"
               />
+              {/* Cash Presets for manual registrar */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-1" id="admin-manual-cash-presets">
+                <span className="text-[9px] text-khmer-gold-dark font-bold">រហ័ស (Quick):</span>
+                {manualCurrency === 'USD' ? (
+                  USD_PRESETS.map((val) => (
+                    <button
+                      id={`admin-preset-usd-${val}`}
+                      key={val}
+                      type="button"
+                      onClick={() => setManualAmount(val.toString())}
+                      className={`px-1.5 py-0.5 text-[10px] rounded border font-semibold transition ${
+                        Number(manualAmount) === val
+                          ? 'bg-khmer-red text-white border-khmer-red'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-khmer-gold/40'
+                      }`}
+                    >
+                      ${val}
+                    </button>
+                  ))
+                ) : (
+                  KHR_PRESETS.map((val) => (
+                    <button
+                      id={`admin-preset-khr-${val}`}
+                      key={val}
+                      type="button"
+                      onClick={() => setManualAmount(val.toString())}
+                      className={`px-1.5 py-0.5 text-[10px] rounded border font-semibold transition ${
+                        Number(manualAmount) === val
+                          ? 'bg-khmer-red text-white border-khmer-red'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-khmer-gold/40'
+                      }`}
+                    >
+                      {val / 1000}k
+                    </button>
+                  ))
+                )}
+              </div>
             </div>
 
             {/* Currency select toggle */}
