@@ -99,8 +99,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const [manualAmount, setManualAmount] = useState('');
   const [manualCurrency, setManualCurrency] = useState<'USD' | 'KHR'>('USD');
   const [manualPaymentMethod, setManualPaymentMethod] = useState<'cash' | 'bank'>('cash');
-  const [manualAttendanceType, setManualAttendanceType] = useState<'in_person' | 'remote'>('remote');
-  const [manualGuestCount, setManualGuestCount] = useState<number>(0);
+  const [manualAttendanceType, setManualAttendanceType] = useState<'in_person' | 'remote'>('in_person');
+  const [manualGuestCount, setManualGuestCount] = useState<number>(1);
   const [manualBlessing, setManualBlessing] = useState('');
   const [manualError, setManualError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,8 +151,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
     .reduce((sum, item) => sum + item.amount, 0);
 
   const totalSittingGuestsApproved = contributions
-    .filter(item => item.status === 'approved' && item.attendance_type === 'in_person')
-    .reduce((sum, item) => sum + (item.guest_count || 1), 0);
+    .filter(item => item.status === 'approved' && (item.attendance_type === 'in_person' || !item.attendance_type || (item.guest_count && item.guest_count > 0)))
+    .reduce((sum, item) => sum + (item.guest_count !== undefined ? item.guest_count : 1), 0);
 
   // Quick single-click approvals/rejections
   const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
@@ -217,8 +217,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
       setManualRelationCustom('');
       setManualAmount('');
       setManualPaymentMethod('cash');
-      setManualAttendanceType('remote');
-      setManualGuestCount(0);
+      setManualAttendanceType('in_person');
+      setManualGuestCount(1);
       setManualBlessing('');
       setShowAddForm(false);
       onRefresh();
@@ -242,8 +242,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
     setEditAmount(item.amount.toString());
     setEditCurrency(item.currency);
     setEditPaymentMethod(item.payment_method || 'cash');
-    setEditAttendanceType(item.attendance_type || 'remote');
-    setEditGuestCount(item.guest_count || 0);
+    setEditAttendanceType(item.attendance_type || 'in_person');
+    setEditGuestCount(item.guest_count !== undefined ? item.guest_count : 1);
     setEditBlessing(item.blessing);
     setEditError('');
   };

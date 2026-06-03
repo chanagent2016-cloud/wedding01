@@ -42,8 +42,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
   const [amount, setAmount] = useState<string>('');
   const [currency, setCurrency] = useState<'USD' | 'KHR'>('USD');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
-  const [attendanceType, setAttendanceType] = useState<'in_person' | 'remote'>('remote');
-  const [guestCount, setGuestCount] = useState<number>(0);
+  const [attendanceType, setAttendanceType] = useState<'in_person' | 'remote'>('in_person');
+  const [guestCount, setGuestCount] = useState<number>(1);
   const [blessing, setBlessing] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
@@ -114,8 +114,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
       setAmount('');
       setBlessing('');
       setPaymentMethod('cash');
-      setAttendanceType('remote');
-      setGuestCount(0);
+      setAttendanceType('in_person');
+      setGuestCount(1);
 
       onContributionSubmitted();
     } catch (err) {

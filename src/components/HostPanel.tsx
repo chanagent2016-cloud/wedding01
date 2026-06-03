@@ -26,8 +26,8 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
   const totalApprovedGuests = approvedList.length;
 
   const totalSittingGuests = approvedList
-    .filter(item => item.attendance_type === 'in_person')
-    .reduce((sum, item) => sum + (item.guest_count || 1), 0);
+    .filter(item => item.attendance_type === 'in_person' || !item.attendance_type || (item.guest_count && item.guest_count > 0))
+    .reduce((sum, item) => sum + (item.guest_count !== undefined ? item.guest_count : 1), 0);
 
   const totalUSD = approvedList
     .filter(item => item.currency === 'USD')
