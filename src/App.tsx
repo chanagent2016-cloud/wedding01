@@ -28,10 +28,20 @@ import {
 
 export default function App() {
   // Application Modes and Role simulation
-  const [activeRole, setActiveRole] = useState<UserRole>('user');
+  const [activeRole, setActiveRole] = useState<UserRole>(() => {
+    const saved = localStorage.getItem('wedding_active_role');
+    return (saved as UserRole) || 'user';
+  });
   
   // Current tab view within custom privileges
-  const [activeTab, setActiveTab] = useState<'guest' | 'host' | 'admin' | 'settings'>('guest');
+  const [activeTab, setActiveTab] = useState<'guest' | 'host' | 'admin' | 'settings'>(() => {
+    const saved = localStorage.getItem('wedding_active_tab');
+    if (saved) return saved as any;
+    const savedRole = localStorage.getItem('wedding_active_role');
+    if (savedRole === 'admin') return 'admin';
+    if (savedRole === 'host') return 'host';
+    return 'guest';
+  });
 
   // Load and refresh state triggers
   const [contributions, setContributions] = useState<WeddingContribution[]>([]);
@@ -48,10 +58,34 @@ export default function App() {
   const [loginError, setLoginError] = useState('');
 
   // Host Login / Session States
-  const [loggedInHost, setLoggedInHost] = useState<any | null>(null);
+  const [loggedInHost, setLoggedInHost] = useState<any | null>(() => {
+    const saved = localStorage.getItem('wedding_logged_in_host');
+    try {
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const [hostLoginUser, setHostLoginUser] = useState('');
   const [hostLoginPass, setHostLoginPass] = useState('');
   const [hostLoginError, setHostLoginError] = useState('');
+
+  // Persist role, tab, and host states to survive page refresh
+  useEffect(() => {
+    localStorage.setItem('wedding_active_role', activeRole);
+  }, [activeRole]);
+
+  useEffect(() => {
+    localStorage.setItem('wedding_active_tab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (loggedInHost) {
+      localStorage.setItem('wedding_logged_in_host', JSON.stringify(loggedInHost));
+    } else {
+      localStorage.removeItem('wedding_logged_in_host');
+    }
+  }, [loggedInHost]);
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +93,7 @@ export default function App() {
 
     if (loginUsername.trim() === 'chan' && loginPassword === '181035') {
       setActiveRole('admin');
+      setActiveTab('admin');
       setShowAdminLogin(false);
       setLoginUsername('');
       setLoginPassword('');
@@ -84,6 +119,7 @@ export default function App() {
     if (matched) {
       setLoggedInHost(matched);
       setActiveRole('host');
+      setActiveTab('host');
       setHostLoginUser('');
       setHostLoginPass('');
     } else {
@@ -125,17 +161,6 @@ export default function App() {
     };
   }, [refreshTrigger]);
 
-  // Adjust default tab displays based on selected Privilege Level
-  useEffect(() => {
-    if (activeRole === 'user') {
-      setActiveTab('guest');
-    } else if (activeRole === 'host') {
-      setActiveTab('host');
-    } else if (activeRole === 'admin') {
-      setActiveTab('admin');
-    }
-  }, [activeRole]);
-
   // Command to trigger refetches from child components
   const triggerRefresh = () => {
     setRefreshTrigger(prev => prev + 1);
@@ -162,7 +187,10 @@ export default function App() {
             {/* User Guest Button Option */}
             <button
               id="role-switch-guest-btn"
-              onClick={() => setActiveRole('user')}
+              onClick={() => {
+                setActiveRole('user');
+                setActiveTab('guest');
+              }}
               className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
                 activeRole === 'user'
                   ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
@@ -175,7 +203,10 @@ export default function App() {
             {/* Host Button Option */}
             <button
               id="role-switch-host-btn"
-              onClick={() => setActiveRole('host')}
+              onClick={() => {
+                setActiveRole('host');
+                setActiveTab('host');
+              }}
               className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
                 activeRole === 'host'
                   ? 'bg-khmer-gold text-khmer-red-dark font-sans shadow-md scale-105'
@@ -194,6 +225,8 @@ export default function App() {
                   setLoginUsername('');
                   setLoginPassword('');
                   setLoginError('');
+                } else {
+                  setActiveTab('admin');
                 }
               }}
               className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold transition-all ${
