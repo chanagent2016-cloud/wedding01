@@ -319,18 +319,20 @@ export default function App() {
           </button>
 
           {/* 2. Bride & Groom Presentation tab */}
-          <button
-            id="tab-select-host-panel"
-            onClick={() => setActiveTab('host')}
-            className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
-              activeTab === 'host'
-                ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            <Heart className="w-4 h-4 text-khmer-gold-dark fill-khmer-gold shrink-0" />
-            <span className="truncate">👰🤵 ក្តារជូនពរម្ចាស់ការ (Host View)</span>
-          </button>
+          {activeRole !== 'user' && (
+            <button
+              id="tab-select-host-panel"
+              onClick={() => setActiveTab('host')}
+              className={`flex items-center justify-center md:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-bold transition-all w-full md:w-auto ${
+                activeTab === 'host'
+                  ? 'bg-khmer-red text-white shadow-sm font-sans scale-[1.01]'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              }`}
+            >
+              <Heart className="w-4 h-4 text-khmer-gold-dark fill-khmer-gold shrink-0" />
+              <span className="truncate">👰🤵 ក្តារជូនពរម្ចាស់ការ (Host View)</span>
+            </button>
+          )}
 
           {/* 3. CRUD Admin Dashboard tab */}
           {activeRole === 'admin' && (
