@@ -275,8 +275,16 @@ async function syncLocalDataToSupabase() {
         
         // Dynamic fallback if missing newly added columns
         if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.message?.includes('attendance_type') || insertErr.message?.includes('guest_count') || insertErr.message?.includes('screenshot_url') || insertErr.code === '42703')) {
-          console.warn(`Sync Warning: Supabase table is missing advanced columns. Retrying fallback insert for ${guestNameClean}.`);
+          console.warn(`Sync Warning: Supabase table is missing advanced columns. Retrying fallback insert for ${guestNameClean} using metadata encoding.`);
           const fallbackPayload = { ...insertPayload };
+          const meta = {
+            payment_method: localItem.payment_method,
+            attendance_type: localItem.attendance_type,
+            guest_count: localItem.guest_count,
+            screenshot_url: localItem.screenshot_url
+          };
+          fallbackPayload.blessing = `${localItem.blessing || ''}\n<!--METADATA:${JSON.stringify(meta)}-->`;
+
           delete fallbackPayload.payment_method;
           delete fallbackPayload.attendance_type;
           delete fallbackPayload.guest_count;
@@ -355,7 +363,51 @@ export const db = {
             hasMore = false;
           }
         }
-        return allData as WeddingContribution[];
+        const processed = allData.map(item => {
+          let blessingText = item.blessing || '';
+          let payment_method = item.payment_method;
+          let attendance_type = item.attendance_type;
+          let guest_count = item.guest_count;
+          let screenshot_url = item.screenshot_url;
+
+          // Check if metadata suffix exists in blessing
+          const match = blessingText.match(/<!--METADATA:(.*?)-->/s);
+          if (match) {
+            try {
+              const meta = JSON.parse(match[1]);
+              blessingText = blessingText.replace(/<!--METADATA:(.*?)-->/s, '').trim();
+              if (meta.payment_method !== undefined && !payment_method) {
+                payment_method = meta.payment_method;
+              }
+              if (meta.attendance_type !== undefined && !attendance_type) {
+                attendance_type = meta.attendance_type;
+              }
+              if (meta.guest_count !== undefined && !guest_count) {
+                guest_count = meta.guest_count;
+              }
+              if (meta.screenshot_url !== undefined && !screenshot_url) {
+                screenshot_url = meta.screenshot_url;
+              }
+            } catch (e) {
+              // Ignore
+            }
+          }
+
+          // Resilient defaults - if screenshot_url exists, force payment_method to be bank
+          if (screenshot_url && screenshot_url.trim() && (!payment_method || payment_method === 'cash')) {
+            payment_method = 'bank';
+          }
+
+          return {
+            ...item,
+            blessing: blessingText || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
+            payment_method: payment_method || 'cash',
+            attendance_type: attendance_type || 'remote',
+            guest_count: guest_count !== undefined ? Number(guest_count) : 0,
+            screenshot_url: screenshot_url
+          };
+        });
+        return processed;
       } catch (e) {
         console.error("Supabase fetch failed, fallback to local database", e);
         // If query fails (e.g. table not created yet or credentials invalid), return local contributions
@@ -363,7 +415,16 @@ export const db = {
       }
     } else {
       // Return local contributions in descending order of time
-      const list = getLocalContributions();
+      const list = getLocalContributions().map(item => {
+        let pm = item.payment_method;
+        if (item.screenshot_url && item.screenshot_url.trim() && (!pm || pm === 'cash')) {
+          pm = 'bank';
+        }
+        return {
+          ...item,
+          payment_method: pm || 'cash'
+        };
+      });
       return [...list].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
   },
@@ -416,8 +477,16 @@ export const db = {
         
         // Resilience: fallback retry insert if database doesn't have the payment_method, attendance_type or guest_count columns
         if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.message?.includes('screenshot_url') || error.code === '42703')) {
-          console.warn("Supabase insert warning: Missing columns. Retrying insert with fallback layout.");
+          console.warn("Supabase insert warning: Missing columns. Retrying insert with fallback metadata encoding.");
           const fallbackPayload = { ...insertPayload };
+          const meta = {
+            payment_method: newItem.payment_method,
+            attendance_type: newItem.attendance_type,
+            guest_count: newItem.guest_count,
+            screenshot_url: newItem.screenshot_url
+          };
+          fallbackPayload.blessing = `${newItem.blessing}\n<!--METADATA:${JSON.stringify(meta)}-->`;
+
           delete fallbackPayload.payment_method;
           delete fallbackPayload.attendance_type;
           delete fallbackPayload.guest_count;
@@ -499,8 +568,16 @@ export const db = {
         
         // Resilience: Fallback if Supabase database lacks new columns
         if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.message?.includes('screenshot_url') || error.code === '42703')) {
-          console.warn("Supabase update failed due to missing columns. Retrying update with safe local fallback values.");
+          console.warn("Supabase update failed due to missing columns. Retrying update with fallback metadata encoding.");
           const safeUpdates = { ...updates };
+          const meta = {
+            payment_method: updates.payment_method,
+            attendance_type: updates.attendance_type,
+            guest_count: updates.guest_count,
+            screenshot_url: updates.screenshot_url
+          };
+          safeUpdates.blessing = `${updates.blessing || ''}\n<!--METADATA:${JSON.stringify(meta)}-->`;
+
           delete safeUpdates.payment_method;
           delete safeUpdates.attendance_type;
           delete safeUpdates.guest_count;
