@@ -280,18 +280,18 @@ export default function App() {
         
         {/* Luxury Sacred Title Card */}
         {!isRoleChosen ? (
-          <div className="bg-white/95 rounded-2xl p-6 sm:p-10 kbach-border-gold shadow-2xl text-center relative overflow-hidden flex flex-col items-center animate-fade-in animate-pulse-gold min-h-[550px] transition-all duration-500">
+          <div className="bg-gradient-to-br from-[#FAF5EC] via-[#F3EAD9] to-[#E5D5BA] rounded-2xl p-6 sm:p-10 kbach-border-gold shadow-2xl text-center relative overflow-hidden flex flex-col items-center animate-fade-in animate-pulse-gold min-h-[550px] transition-all duration-500">
             {/* Corner Ornaments */}
-            <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-khmer-gold/30"></div>
-            <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-khmer-gold/30"></div>
-            <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-khmer-gold/30"></div>
-            <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-khmer-gold/30"></div>
-            <div className="absolute inset-0 khmer-pattern-bg opacity-[0.03] pointer-events-none"></div>
+            <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-khmer-gold/60"></div>
+            <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-khmer-gold/60"></div>
+            <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-khmer-gold/60"></div>
+            <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-khmer-gold/60"></div>
+            <div className="absolute inset-0 khmer-pattern-bg opacity-[0.06] pointer-events-none"></div>
 
             {/* SNEHA WEDDING & CEREMONY Brand logo */}
             <div className="mb-4 sm:mb-6 flex justify-center items-center relative group select-none">
-              <div className="absolute -inset-1.5 bg-gradient-to-r from-khmer-gold/10 via-khmer-gold/45 to-khmer-gold/10 rounded-2xl blur-sm opacity-80 group-hover:opacity-100 transition duration-500"></div>
-              <div className="bg-white p-3.5 sm:p-4 rounded-2xl border-2 border-khmer-gold/35 shadow-lg relative z-10 flex items-center justify-center">
+              <div className="absolute -inset-1.5 bg-gradient-to-r from-khmer-gold/15 via-khmer-gold/50 to-khmer-gold/15 rounded-2xl blur-sm opacity-90 group-hover:opacity-100 transition duration-500"></div>
+              <div className="bg-gradient-to-br from-white to-[#FAF6EE] p-3.5 sm:p-4 rounded-2xl border-2 border-khmer-gold/45 shadow-lg relative z-10 flex items-center justify-center animate-float-gentle">
                 <img 
                   src="/logo123.png" 
                   alt="SNEHA WEDDING & CEREMONY" 
@@ -315,7 +315,7 @@ export default function App() {
             <KbachDivider />
 
             {/* Immersive Beautiful Couple Announcement Segment */}
-            <div className="bg-gradient-to-br from-[#FFF9FA] via-[#FFFDF9] to-[#FFF9FA] border border-khmer-gold/30 rounded-3xl p-5 sm:p-7 mb-8 max-w-2xl w-full text-center flex flex-col items-center relative z-10 shadow-lg shadow-rose-950/[0.02]">
+            <div className="bg-gradient-to-br from-white via-[#FCF8F2] to-white border border-khmer-gold/40 rounded-3xl p-5 sm:p-7 mb-8 max-w-2xl w-full text-center flex flex-col items-center relative z-10 shadow-lg shadow-rose-950/[0.02]">
               <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-48 h-2 bg-gradient-to-r from-transparent via-khmer-gold to-transparent rounded-full opacity-60"></div>
               
               <span className="text-[10px] sm:text-xs font-black text-khmer-gold-dark uppercase tracking-widest font-serif mb-3 flex items-center gap-1.5">
@@ -326,10 +326,10 @@ export default function App() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full my-3">
                 
                 {/* Groom Box */}
-                <div className="flex-1 w-full bg-white border border-rose-100 hover:border-khmer-gold/40 rounded-2xl p-3 shadow-sm transition-all duration-300 hover:shadow flex flex-col items-center relative overflow-hidden group/couple-box">
-                  <span className="absolute top-1 left-2 text-[8px] font-serif font-extrabold text-slate-300 tracking-wider">GROOM</span>
+                <div className="flex-1 w-full bg-white border border-rose-200/80 hover:border-khmer-gold/40 rounded-2xl p-3 shadow-sm transition-all duration-300 hover:shadow flex flex-col items-center relative overflow-hidden group/couple-box font-sans">
+                  <span className="absolute top-1 left-2 text-[8px] font-serif font-black text-slate-400 tracking-wider">GROOM</span>
                   <div className="w-1.5 h-6 bg-khmer-gold/30 absolute left-0 top-1/2 -translate-y-1/2 rounded-r-md"></div>
-                  <span className="text-[10px] text-slate-400 font-serif font-bold uppercase">កូនកំលោះ</span>
+                  <span className="text-[10px] text-slate-500 font-serif font-bold uppercase">កូនកំលោះ</span>
                   <span className="text-sm sm:text-base font-black text-khmer-red-dark mt-1 font-serif group-hover/couple-box:text-khmer-red transition-all">
                     ទូច ចាន់ដារ៉ាហៀង
                   </span>
@@ -337,17 +337,17 @@ export default function App() {
 
                 {/* Animated Central Heart Container */}
                 <div className="relative flex items-center justify-center py-1 sm:py-0 select-none">
-                  <div className="absolute w-12 h-12 rounded-full bg-rose-50/70 border border-rose-100/40 animate-ping opacity-40"></div>
-                  <div className="w-10 h-10 rounded-full bg-[#FFF0F2] flex items-center justify-center text-khmer-red shadow-inner relative z-10 border border-rose-100 animate-pulse-heart">
+                  <div className="absolute w-12 h-12 rounded-full bg-rose-50/70 border border-rose-200/40 animate-ping opacity-40"></div>
+                  <div className="w-10 h-10 rounded-full bg-[#FFF0F2] flex items-center justify-center text-khmer-red shadow-inner relative z-10 border border-rose-200 animate-pulse-heart">
                     <Heart className="w-5 h-5 fill-current text-khmer-red" />
                   </div>
                 </div>
 
                 {/* Bride Box */}
-                <div className="flex-1 w-full bg-white border border-rose-100 hover:border-khmer-gold/40 rounded-2xl p-3 shadow-sm transition-all duration-300 hover:shadow flex flex-col items-center relative overflow-hidden group/couple-box">
-                  <span className="absolute top-1 right-2 text-[8px] font-serif font-extrabold text-slate-300 tracking-wider">BRIDE</span>
+                <div className="flex-1 w-full bg-white border border-rose-200/80 hover:border-khmer-gold/40 rounded-2xl p-3 shadow-sm transition-all duration-300 hover:shadow flex flex-col items-center relative overflow-hidden group/couple-box font-sans">
+                  <span className="absolute top-1 right-2 text-[8px] font-serif font-black text-slate-400 tracking-wider">BRIDE</span>
                   <div className="w-1.5 h-6 bg-khmer-gold/30 absolute right-0 top-1/2 -translate-y-1/2 rounded-l-md"></div>
-                  <span className="text-[10px] text-slate-400 font-serif font-bold uppercase">កូនក្រមុំ</span>
+                  <span className="text-[10px] text-slate-500 font-serif font-bold uppercase">កូនក្រមុំ</span>
                   <span className="text-sm sm:text-base font-black text-khmer-red-dark mt-1 font-serif group-hover/couple-box:text-khmer-red transition-all">
                     ប៉េន ស្រីមុំ
                   </span>
@@ -357,7 +357,7 @@ export default function App() {
               
               <div className="mt-2.5 flex items-center gap-2 max-w-md">
                 <span className="text-khmer-gold text-lg select-none">✦</span>
-                <p className="text-[11px] sm:text-[11.5px] text-slate-500 leading-relaxed font-medium font-sans">
+                <p className="text-[11px] sm:text-[11.5px] text-slate-700 leading-relaxed font-semibold font-sans">
                   សូមគោរពអញ្ជើញ ឯកឧត្តម លោកជំទាវ លោកប្រុស លោកស្រី ជ្រើសរើសតួនាទីខាងក្រោម ដើម្បីចូលរួមប្រសិទ្ធពរជ័យ កត់ចំណងដៃ និងអបអរសាទរថ្ងៃមង្គលការ។
                 </p>
                 <span className="text-khmer-gold text-lg select-none">✦</span>
@@ -367,11 +367,11 @@ export default function App() {
             {/* Redesigned SUPER-PREMIUM Role Selection Cards */}
             <div className="w-full max-w-4xl relative z-10" id="role-selector-modern">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="h-[1px] bg-slate-200 w-12"></span>
-                <p className="text-[10px] sm:text-xs font-bold text-khmer-gold-dark uppercase tracking-widest font-serif">
+                <span className="h-[1px] bg-khmer-gold/40 w-12"></span>
+                <p className="text-[10px] sm:text-xs font-black text-amber-950 uppercase tracking-widest font-serif">
                   សូមជ្រើសរើសតួនាទីដើម្បីបន្ត (SELECT PROCESS ROLE)
                 </p>
-                <span className="h-[1px] bg-slate-200 w-12"></span>
+                <span className="h-[1px] bg-khmer-gold/40 w-12"></span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
@@ -385,7 +385,7 @@ export default function App() {
                     setActiveTab('guest');
                     setIsRoleChosen(true);
                   }}
-                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-rose-100/60 bg-gradient-to-b from-white to-[#FEFBFB] hover:border-khmer-red hover:from-white hover:to-[#FFF5F6] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-red/5 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none"
+                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-rose-200 bg-gradient-to-b from-white to-[#FEFBFB] hover:border-khmer-red hover:from-white hover:to-[#FFF5F6] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-red/5 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none shadow-sm"
                 >
                   <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
                   
@@ -401,7 +401,7 @@ export default function App() {
                     <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
                       ✍️ ជូនពរ និងកត់ចំណងដៃ
                     </span>
-                    <p className="text-[9px] sm:text-[10.5px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                    <p className="text-[9px] sm:text-[10.5px] text-slate-600 group-hover:text-slate-800 mt-2 font-sans font-medium leading-relaxed transition-colors px-1">
                       ចុះឈ្មោះចូលរួម កត់ចំនួនទឹកប្រាក់ចំណងដៃ និងសរសេរពាក្យជូនពរផ្អែមល្ហែមដល់គូមង្គល។
                     </p>
                   </div>
@@ -427,7 +427,7 @@ export default function App() {
                     }
                     setIsRoleChosen(true);
                   }}
-                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-amber-100/50 bg-gradient-to-b from-white to-[#FCFBF8] hover:border-khmer-gold hover:from-white hover:to-[#FFFDF9] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-gold/10 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none"
+                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-amber-200 bg-gradient-to-b from-white to-[#FCFBF8] hover:border-khmer-gold hover:from-white hover:to-[#FFFDF9] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-gold/10 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none shadow-sm"
                 >
                   <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
 
@@ -443,13 +443,13 @@ export default function App() {
                     <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
                       👰🤵 ពិនិត្យក្ដារព័ត៌មាន
                     </span>
-                    <p className="text-[9px] sm:text-[10.5px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                    <p className="text-[9px] sm:text-[10.5px] text-slate-600 group-hover:text-slate-800 mt-2 font-sans font-medium leading-relaxed transition-colors px-1">
                       មើលបញ្ជីចំណងដៃសរុប ចំនួនភ្ញៀវចូលរួម និងទស្សនាក្ដារជូនពរដែលបានអនុម័តផ្ទាល់។
                     </p>
                   </div>
 
                   {/* Explicit Action Call Button */}
-                  <div className="w-full mt-4 bg-[#C29124] hover:bg-[#A67B1E] text-white rounded-xl py-2 px-4 font-serif text-[11px] font-bold tracking-wider transition-colors shadow-sm group-hover:shadow flex items-center justify-center gap-1">
+                  <div className="w-full mt-4 bg-khmer-gold hover:bg-khmer-gold-dark text-white rounded-xl py-2 px-4 font-serif text-[11px] font-bold tracking-wider transition-colors shadow-sm group-hover:shadow flex items-center justify-center gap-1">
                     <span>ចូលពិនិត្យរបាយការណ៍</span>
                     <span>➜</span>
                   </div>
@@ -467,7 +467,7 @@ export default function App() {
                     }
                     setIsRoleChosen(true);
                   }}
-                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-slate-200/50 bg-gradient-to-b from-white to-slate-50 hover:border-slate-800 hover:from-white hover:to-slate-100 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none"
+                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-slate-300 bg-gradient-to-b from-white to-slate-50 hover:border-slate-800 hover:from-white hover:to-slate-100 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none shadow-sm"
                 >
                   <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
 
@@ -483,7 +483,7 @@ export default function App() {
                     <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
                       🔑 គ្រប់គ្រងប្រព័ន្ធ
                     </span>
-                    <p className="text-[9px] sm:text-[10.5px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                    <p className="text-[9px] sm:text-[10.5px] text-slate-600 group-hover:text-slate-800 mt-2 font-sans font-medium leading-relaxed transition-colors px-1">
                       សិទ្ធិគ្រប់គ្រងខ្ពស់បំផុត កែសម្រួល អនុម័ត និងលុបចំណងដៃ ឬបង្កើតគណនីម្ចាស់ការ។
                     </p>
                   </div>
@@ -498,7 +498,7 @@ export default function App() {
             </div>
 
             {/* Sync Status Frame */}
-            <div className="mt-8 pt-4 border-t border-slate-100 w-full flex justify-center text-xs relative z-10">
+            <div className="mt-8 pt-4 border-t border-khmer-gold/30 w-full flex justify-center text-xs relative z-10">
               {isDbReal ? (
                 <span className="bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full border border-emerald-200 flex items-center gap-1.5 font-sans font-medium transition-all hover:scale-105">
                   <Database className="w-3.5 h-3.5 text-emerald-500" /> ទិន្នន័យ៖ អនឡាញពិត (Live Cloud Syncing Ready)
