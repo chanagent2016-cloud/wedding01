@@ -288,13 +288,13 @@ export default function App() {
             <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-khmer-gold/60"></div>
             <div className="absolute inset-0 khmer-pattern-bg opacity-[0.06] pointer-events-none"></div>
 
-            {/* SNEHA WEDDING & CEREMONY Brand logo */}
+            {/* SNEH WEDDING & CEREMONY Brand logo */}
             <div className="mb-4 sm:mb-6 flex justify-center items-center relative group select-none">
               <div className="absolute -inset-1.5 bg-gradient-to-r from-khmer-gold/15 via-khmer-gold/50 to-khmer-gold/15 rounded-2xl blur-sm opacity-90 group-hover:opacity-100 transition duration-500"></div>
               <div className="bg-gradient-to-br from-white to-[#FAF6EE] p-3.5 sm:p-4 rounded-2xl border-2 border-khmer-gold/45 shadow-lg relative z-10 flex items-center justify-center animate-float-gentle">
                 <img 
                   src="/logo123.png" 
-                  alt="SNEHA WEDDING & CEREMONY" 
+                  alt="SNEH WEDDING & CEREMONY" 
                   className="h-28 sm:h-32 w-auto object-contain transition-transform duration-500 hover:scale-[1.02]"
                   referrerPolicy="no-referrer"
                   id="wedding-brand-logo"
@@ -520,12 +520,12 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <img 
                   src="/logo123.png" 
-                  alt="SNEHA Logo" 
+                  alt="SNEH Logo" 
                   className="h-8 w-auto object-contain"
                   referrerPolicy="no-referrer"
                 />
                 <div className="text-left">
-                  <span className="block text-[8px] uppercase tracking-widest text-khmer-gold-dark font-extrabold font-serif">SNEHA SYSTEMS</span>
+                  <span className="block text-[8px] uppercase tracking-widest text-khmer-gold-dark font-extrabold font-serif">SNEH SYSTEMS</span>
                   <span className="block text-xs font-serif font-extrabold text-khmer-red-dark">មង្គលការ ទូច ចាន់ដារ៉ាហៀង 💖 ប៉េន ស្រីមុំ</span>
                 </div>
               </div>
