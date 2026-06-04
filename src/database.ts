@@ -379,16 +379,16 @@ export const db = {
             try {
               const meta = JSON.parse(match[1]);
               blessingText = blessingText.replace(/<!--METADATA:(.*?)-->/s, '').trim();
-              if (meta.payment_method !== undefined && !payment_method) {
+              if (meta.payment_method !== undefined) {
                 payment_method = meta.payment_method;
               }
-              if (meta.attendance_type !== undefined && !attendance_type) {
+              if (meta.attendance_type !== undefined) {
                 attendance_type = meta.attendance_type;
               }
-              if (meta.guest_count !== undefined && !guest_count) {
+              if (meta.guest_count !== undefined) {
                 guest_count = meta.guest_count;
               }
-              if (meta.screenshot_url !== undefined && !screenshot_url) {
+              if (meta.screenshot_url !== undefined) {
                 screenshot_url = meta.screenshot_url;
               }
             } catch (e) {
@@ -568,9 +568,47 @@ export const db = {
   }): Promise<boolean> {
     if (supabaseClient && !id.startsWith('local-')) {
       try {
+        // Fetch current record first to merge metadata and avoid data wiping
+        const { data: existingRows } = await supabaseClient
+          .from('wedding_contributions')
+          .select('*')
+          .eq('id', id);
+
+        let existingItem = existingRows && existingRows.length > 0 ? existingRows[0] : null;
+        let existingMeta: any = {};
+        
+        if (existingItem && existingItem.blessing) {
+          const match = existingItem.blessing.match(/<!--METADATA:(.*?)-->/s);
+          if (match) {
+            try {
+              existingMeta = JSON.parse(match[1]);
+            } catch (e) {
+              // Ignore
+            }
+          }
+        }
+
+        // Resolved values favoring updates, fallback to existing columns, then existing metadata
+        const pm = updates.payment_method !== undefined ? updates.payment_method : (existingItem?.payment_method !== undefined && existingItem.payment_method !== null ? existingItem.payment_method : existingMeta.payment_method);
+        const at = updates.attendance_type !== undefined ? updates.attendance_type : (existingItem?.attendance_type !== undefined && existingItem.attendance_type !== null ? existingItem.attendance_type : existingMeta.attendance_type);
+        const gc = updates.guest_count !== undefined ? updates.guest_count : (existingItem?.guest_count !== undefined && existingItem.guest_count !== null ? existingItem.guest_count : existingMeta.guest_count);
+        const screenshot = updates.screenshot_url !== undefined ? updates.screenshot_url : (existingItem?.screenshot_url !== undefined && existingItem.screenshot_url !== null ? existingItem.screenshot_url : existingMeta.screenshot_url);
+
+        const fullPayload = {
+          guest_name: updates.guest_name,
+          relationship: updates.relationship,
+          amount: updates.amount,
+          currency: updates.currency,
+          blessing: updates.blessing || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
+          payment_method: pm || 'cash',
+          attendance_type: at || 'remote',
+          guest_count: gc !== undefined ? Number(gc) : 0,
+          screenshot_url: screenshot
+        };
+
         let { error } = await supabaseClient
           .from('wedding_contributions')
-          .update(updates)
+          .update(fullPayload)
           .eq('id', id);
         
         // Resilience fallback: if the first update failed for any reason (e.g., missing columns),
@@ -585,10 +623,10 @@ export const db = {
           } as any;
 
           const meta = {
-            payment_method: updates.payment_method,
-            attendance_type: updates.attendance_type,
-            guest_count: updates.guest_count,
-            screenshot_url: updates.screenshot_url
+            payment_method: pm || 'cash',
+            attendance_type: at || 'remote',
+            guest_count: gc !== undefined ? Number(gc) : 0,
+            screenshot_url: screenshot
           };
           safeUpdates.blessing = `${updates.blessing || ''}\n<!--METADATA:${JSON.stringify(meta)}-->`;
 
