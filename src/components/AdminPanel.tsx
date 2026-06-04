@@ -132,6 +132,30 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
     'ត្រូវជា៖ ភ្ញៀវកិត្តិយស (Honored Guest)',
   ];
 
+  // Toggle columns state: Blessing and Status columns are hidden by default as requested
+  const [showBlessingColumn, setShowBlessingColumn] = useState(false);
+  const [showStatusColumn, setShowStatusColumn] = useState(false);
+
+  // Helper to format relationship: removes 'ត្រូវជា' and splits into Khmer and English
+  const formatRelationship = (rel: string) => {
+    if (!rel) return { khmer: '', english: '' };
+    let cleaned = rel
+      .replace(/^ត្រូវជា៖\s*/, '')
+      .replace(/^ត្រូវជា:\s*/, '')
+      .replace(/^ត្រូវជា\s*/, '')
+      .replace(/^ត្រូវជាអ្វី៖\s*/, '')
+      .replace(/^ត្រូវជាអ្វី:\s*/, '')
+      .replace(/^ត្រូវជាអ្វី\s*/, '');
+    
+    const match = cleaned.match(/^([^(]+)\s*(?:\(([^)]+)\))?/);
+    if (match) {
+      const khmer = match[1]?.trim() || cleaned;
+      const english = match[2]?.trim() || '';
+      return { khmer, english };
+    }
+    return { khmer: cleaned, english: '' };
+  };
+
   // Helper formatting values
   const formatUSD = (val: number) => `$${val.toLocaleString()}`;
   const formatKHR = (val: number) => `${val.toLocaleString()} ៛`;
@@ -309,7 +333,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   return (
     <div className="space-y-6 animate-fade-in" id="admin-panel-container">
       {/* Dynamic Dashboard Scoreboards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-5 gap-3.5">
         {/* Total Registered */}
         <div className="bg-white border border-khmer-gold/20 rounded-xl p-3.5 shadow-sm text-center relative overflow-hidden">
           <p className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">សំបុត្រទាំងអស់ (Total Envelopes)</p>
@@ -325,15 +349,6 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
           <h5 className={`text-xl md:text-2xl font-bold flex items-center justify-center gap-1.5 mt-1 font-serif ${pendingCount > 0 ? 'text-amber-600 animate-pulse' : 'text-slate-600'}`}>
             <Clock className="w-4 h-4 text-amber-500" />
             {isLoading ? '...' : pendingCount}
-          </h5>
-        </div>
-
-        {/* Approved Count */}
-        <div className="bg-emerald-50/75 border border-emerald-300/40 rounded-xl p-3.5 shadow-sm text-center relative overflow-hidden">
-          <p className="text-[9px] uppercase font-bold text-emerald-800 tracking-wider">បានអនុម័ត (Approved)</p>
-          <h5 className="text-xl md:text-2xl font-bold text-emerald-600 flex items-center justify-center gap-1.5 mt-1 font-serif">
-            <CheckSquare className="w-4 h-4 text-emerald-500" />
-            {isLoading ? '...' : approvedCount}
           </h5>
         </div>
 
@@ -716,55 +731,80 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
           </div>
         </div>
 
-        {/* Tab segmentation for Status filter (all, pending, approved, rejected) */}
-        <div className="flex border-b border-slate-100 pb-1 flex-wrap gap-1">
-          <button
-            id="filter-tab-all"
-            onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
-              statusFilter === 'all'
-                ? 'bg-khmer-red text-white shadow-sm'
-                : 'text-slate-500 hover:bg-slate-100'
-            }`}
-          >
-            ទាំងអស់ (All: {totalGuests})
-          </button>
-          
-          <button
-            id="filter-tab-pending"
-            onClick={() => setStatusFilter('pending')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
-              statusFilter === 'pending'
-                ? 'bg-amber-500 text-white shadow-sm'
-                : 'text-amber-600 hover:bg-amber-50'
-            }`}
-          >
-            <Clock className="w-3 h-3" /> រង់ចាំពិនិត្យ ({pendingCount} Pending)
-          </button>
+        {/* Tab segmentation for Status filter (all, pending, approved, rejected) & Toggles to show/hide columns */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between border-b border-slate-100 pb-2 gap-3">
+          <div className="flex flex-wrap gap-1">
+            <button
+              id="filter-tab-all"
+              onClick={() => setStatusFilter('all')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                statusFilter === 'all'
+                  ? 'bg-khmer-red text-white shadow-sm'
+                  : 'text-slate-500 hover:bg-slate-100'
+              }`}
+            >
+              ទាំងអស់ (All: {totalGuests})
+            </button>
+            
+            <button
+              id="filter-tab-pending"
+              onClick={() => setStatusFilter('pending')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
+                statusFilter === 'pending'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-amber-600 hover:bg-amber-50'
+              }`}
+            >
+              <Clock className="w-3 h-3" /> រង់ចាំពិនិត្យ ({pendingCount} Pending)
+            </button>
 
-          <button
-            id="filter-tab-approved"
-            onClick={() => setStatusFilter('approved')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
-              statusFilter === 'approved'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-emerald-600 hover:bg-emerald-50'
-            }`}
-          >
-            <Check className="w-3 h-3" /> បានយល់ព្រម ({approvedCount} Approved)
-          </button>
+            <button
+              id="filter-tab-approved"
+              onClick={() => setStatusFilter('approved')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
+                statusFilter === 'approved'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-emerald-600 hover:bg-emerald-50'
+              }`}
+            >
+              <Check className="w-3 h-3" /> បានយល់ព្រម ({approvedCount} Approved)
+            </button>
 
-          <button
-            id="filter-tab-rejected"
-            onClick={() => setStatusFilter('rejected')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
-              statusFilter === 'rejected'
-                ? 'bg-slate-600 text-white shadow-sm'
-                : 'text-slate-500 hover:bg-slate-100'
-            }`}
-          >
-            <X className="w-3 h-3" /> បានបដិសេធ ({rejectedCount} Rejected)
-          </button>
+            <button
+              id="filter-tab-rejected"
+              onClick={() => setStatusFilter('rejected')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
+                statusFilter === 'rejected'
+                  ? 'bg-slate-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:bg-slate-100'
+              }`}
+            >
+              <X className="w-3 h-3" /> បានបដិសេធ ({rejectedCount} Rejected)
+            </button>
+          </div>
+
+          {/* Quick Visibility Configuration Toggles */}
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 md:self-start lg:self-auto">
+            <span className="font-bold text-slate-700 font-sans">ជម្រើសជួរឈរ (Column View):</span>
+            <label className="flex items-center gap-1.5 cursor-pointer hover:text-slate-800 select-none">
+              <input 
+                type="checkbox" 
+                checked={showBlessingColumn} 
+                onChange={() => setShowBlessingColumn(!showBlessingColumn)}
+                className="rounded border-slate-300 text-khmer-red focus:ring-khmer-red w-3.5 h-3.5 cursor-pointer accent-khmer-red"
+              />
+              <span className="font-medium text-[11px]">បង្ហាញសេចក្ដីជូនពរ (Show Blessing)</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer hover:text-slate-800 select-none">
+              <input 
+                type="checkbox" 
+                checked={showStatusColumn} 
+                onChange={() => setShowStatusColumn(!showStatusColumn)}
+                className="rounded border-slate-300 text-khmer-red focus:ring-khmer-red w-3.5 h-3.5 cursor-pointer accent-khmer-red"
+              />
+              <span className="font-medium text-[11px]">បង្ហាញស្ថានភាព (Show Status)</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -791,8 +831,8 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                     <th className="py-3 px-4">វិធីសាស្ត្រប្រគល់ (Method)</th>
                     <th className="py-3 px-4">វត្តមាន (Attendance)</th>
                     <th className="py-3 px-4 text-right">ចំនួនចំណងដៃ (Amount)</th>
-                    <th className="py-3 px-4">សេចក្តីជូនពរ (Blessing Text)</th>
-                    <th className="py-3 px-4 text-center">ស្ថានភាព (Status)</th>
+                    {showBlessingColumn && <th className="py-3 px-4">សេចក្តីជូនពរ (Blessing Text)</th>}
+                    {showStatusColumn && <th className="py-3 px-4 text-center">ស្ថានភាព (Status)</th>}
                     <th className="py-3 px-4 text-center">ការគ្រប់គ្រង (Admin Actions)</th>
                   </tr>
                 </thead>
@@ -813,9 +853,17 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                         </div>
                       </td>
 
-                      {/* Relationship Column */}
-                      <td className="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">
-                        {item.relationship}
+                      {/* Relationship Column - Removes "ត្រូវជា" and aligns Khmer above English */}
+                      <td className="py-3.5 px-4 text-slate-500 font-medium">
+                        {(() => {
+                          const { khmer, english } = formatRelationship(item.relationship);
+                          return (
+                            <div className="flex flex-col">
+                              <span className="text-slate-900 font-semibold text-xs leading-tight">{khmer}</span>
+                              {english && <span className="text-[10px] text-slate-400 font-sans mt-0.5 leading-tight">{english}</span>}
+                            </div>
+                          );
+                        })()}
                       </td>
 
                       {/* Payment Method Column */}
@@ -852,30 +900,34 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                       </td>
 
                       {/* Blessing core text Column */}
-                      <td className="py-3.5 px-4 max-w-sm">
-                        <p className="line-clamp-2 text-slate-600/95 italic bg-slate-50 p-1.5 rounded leading-relaxed border-l border-khmer-gold/30">
-                          "{item.blessing}"
-                        </p>
-                      </td>
+                      {showBlessingColumn && (
+                        <td className="py-3.5 px-4 max-w-sm">
+                          <p className="line-clamp-2 text-slate-600/95 italic bg-slate-50 p-1.5 rounded leading-relaxed border-l border-khmer-gold/30">
+                            "{item.blessing}"
+                          </p>
+                        </td>
+                      )}
 
                       {/* Approval Status indicators */}
-                      <td className="py-3.5 px-4 text-center">
-                        {item.status === 'pending' && (
-                          <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                            រង់ចាំ (Pending)
-                          </span>
-                        )}
-                        {item.status === 'approved' && (
-                          <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                            យល់ព្រម (Approved)
-                          </span>
-                        )}
-                        {item.status === 'rejected' && (
-                          <span className="inline-flex items-center gap-1 bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded text-[10px]">
-                            បដិសេធ (Rejected)
-                          </span>
-                        )}
-                      </td>
+                      {showStatusColumn && (
+                        <td className="py-3.5 px-4 text-center">
+                          {item.status === 'pending' && (
+                            <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                              រង់ចាំ (Pending)
+                            </span>
+                          )}
+                          {item.status === 'approved' && (
+                            <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                              យល់ព្រម (Approved)
+                            </span>
+                          )}
+                          {item.status === 'rejected' && (
+                            <span className="inline-flex items-center gap-1 bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded text-[10px]">
+                              បដិសេធ (Rejected)
+                            </span>
+                          )}
+                        </td>
+                      )}
 
                       {/* Action Panel Cell (Approve/Reject buttons, Edit modal link, Delete code) */}
                       <td className="py-3.5 px-4">
@@ -990,7 +1042,15 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                   <div className="grid grid-cols-2 gap-3 text-xs font-sans pt-1 border-t border-slate-50">
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">ទំនាក់ទំនង</span>
-                      <span className="text-slate-700 font-semibold truncate block text-[11px]">{item.relationship}</span>
+                      {(() => {
+                        const { khmer, english } = formatRelationship(item.relationship);
+                        return (
+                          <div className="flex flex-col mt-0.5">
+                            <span className="text-slate-800 font-semibold text-[11px] leading-tight">{khmer}</span>
+                            {english && <span className="text-[9px] text-slate-400 font-sans leading-tight">{english}</span>}
+                          </div>
+                        );
+                      })()}
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">វិធីសាស្ត្រប្រគល់</span>
@@ -1025,9 +1085,11 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                   </div>
 
                   {/* Greeting message callout box */}
-                  <div className="bg-slate-50 p-2.5 rounded border-l-2 border-khmer-gold/30 text-xs italic text-slate-700 leading-relaxed font-sans">
-                    "{item.blessing}"
-                  </div>
+                  {showBlessingColumn && (
+                    <div className="bg-slate-50 p-2.5 rounded border-l-2 border-khmer-gold/30 text-xs italic text-slate-700 leading-relaxed font-sans">
+                      "{item.blessing}"
+                    </div>
+                  )}
 
                   {/* Bottom functional console actions panel */}
                   <div className="flex items-center justify-end gap-1.5 pt-1.5 border-t border-slate-100">
@@ -1115,7 +1177,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 <input
                   type="text"
                   required
-                  placeholder="ឧ. កូនកំលោះ ហៀង ឬ គ្រួសារខាងស្រី"
+                  placeholder="ឧ. កូនកំលោះ ទូច ចាន់ដារ៉ាហៀង ឬ គ្រួសារខាងស្រី"
                   value={newHostFullname}
                   onChange={(e) => setNewHostFullname(e.target.value)}
                   className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-3 py-2 text-slate-800 focus:outline-none focus:border-khmer-gold"

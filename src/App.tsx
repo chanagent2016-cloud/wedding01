@@ -279,109 +279,229 @@ export default function App() {
       <main className="w-full max-w-6xl mx-auto px-4 md:px-6 pt-8 flex-grow space-y-8 relative z-10">
         
         {/* Luxury Sacred Title Card */}
-        <div className="bg-white/95 rounded-2xl p-6 md:p-8 kbach-border-gold shadow-2xl text-center relative overflow-hidden flex flex-col items-center">
-          <div className="absolute inset-0 khmer-pattern-bg opacity-[0.04] pointer-events-none"></div>
+        {!isRoleChosen ? (
+          <div className="bg-white/95 rounded-2xl p-6 sm:p-10 kbach-border-gold shadow-2xl text-center relative overflow-hidden flex flex-col items-center animate-fade-in animate-pulse-gold min-h-[550px] transition-all duration-500">
+            {/* Corner Ornaments */}
+            <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-khmer-gold/30"></div>
+            <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-khmer-gold/30"></div>
+            <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-khmer-gold/30"></div>
+            <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-khmer-gold/30"></div>
+            <div className="absolute inset-0 khmer-pattern-bg opacity-[0.03] pointer-events-none"></div>
 
-          {!isRoleChosen ? (
-            <>
-              {/* SNEHA WEDDING & CEREMONY Brand logo */}
-              <div className="mb-5 flex justify-center items-center">
-                <img 
-                  src="/logo123.png" 
-                  alt="SNEHA WEDDING & CEREMONY" 
-                  className="h-28 sm:h-36 w-auto object-contain transition-transform hover:scale-105 duration-300 drop-shadow-md"
-                  referrerPolicy="no-referrer"
-                  id="wedding-brand-logo"
-                />
-              </div>
-
-              <div className="space-y-1 text-center flex flex-col items-center">
-                <h1 className="font-serif text-lg sm:text-2xl md:text-3xl font-bold tracking-wide sm:tracking-widest text-khmer-red uppercase flex flex-wrap items-center justify-center gap-2 text-center leading-snug">
-                  សៀវភៅមាស កត់ចំណងដៃអាពាហ៍ពិពាហ៍
-                </h1>
-                <p className="font-serif text-xs sm:text-lg font-bold text-khmer-gold-dark mt-1 sm:mt-0.5 tracking-wide sm:tracking-widest">
-                  GIFT REGISTRY & GUESTBOOK SYSTEM
-                </p>
-              </div>
-
-              <KbachDivider />
-
-              {/* Couple Announcement names */}
-              <div className="space-y-1.5 max-w-lg text-center flex flex-col items-center">
-                <p className="text-[9px] sm:text-[10px] font-bold text-khmer-gold-dark uppercase tracking-wider font-serif">
-                  មហាមង្គលការ សិរីសួស្តី អាពាហ៍ពិពាហ៍គូស្វាមីភរិយាថ្មី
-                </p>
-                <h2 className="text-base sm:text-xl md:text-2xl font-bold text-khmer-red-dark italic flex flex-wrap justify-center items-center gap-1 sm:gap-2">
-                  កូនកំលោះ <span className="text-khmer-gold font-sans font-extrabold not-italic whitespace-nowrap">ហៀង</span> និង កូនក្រមុំ <span className="text-khmer-gold font-sans font-extrabold not-italic whitespace-nowrap">ស្រីមុំ</span>
-                </h2>
-                <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed font-sans px-2">
-                  សូមចូលរួមអបអរសាទរ និងជូនពរជ័យមង្គលដល់គូស្រករថ្មី សម្រាប់ដំណើរជីវិតដ៏វែងឆ្ងាយរួមគ្នា។
-                </p>
-              </div>
-
-              {/* Connected Sync Indicator status */}
-              <div className="mt-4 flex flex-col items-center gap-3 text-xs font-semibold">
-                {isDbReal ? (
-                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-300 flex items-center gap-1.5">
-                    <Database className="w-3.5 h-3.5 text-emerald-500" /> ទិន្នន័យ៖ អនឡាញពិត (Supabase Syncing ON)
-                  </span>
-                ) : (
-                  <span className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1.5">
-                    <Database className="w-3.5 h-3.5 text-amber-500" /> ទិន្នន័យ៖ មូលដ្ឋានសិប្បនិម្មិត (LocalStorage Mode)
-                  </span>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="flex items-center gap-2 mb-2 font-serif text-xs bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200/50 shadow-inner">
-              <span className="text-slate-500">តួនាទីសកម្ម៖</span>
-              <span className="font-extrabold text-khmer-red-dark uppercase tracking-wider">
-                {activeTab === 'guest' ? '✍️ ភ្ញៀវចំណងដៃ' : activeTab === 'host' ? '👰🤵 ម្ចាស់ការ' : '🔑 គ្រប់គ្រង Admin'}
-              </span>
+            {/* SNEHA WEDDING & CEREMONY Brand logo */}
+            <div className="mb-4 sm:mb-6 flex justify-center items-center relative group">
+              <div className="absolute -inset-2 bg-gradient-to-r from-khmer-gold/0 via-khmer-gold/15 to-khmer-gold/0 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+              <img 
+                src="/logo123.png" 
+                alt="SNEHA WEDDING & CEREMONY" 
+                className="h-28 sm:h-36 w-auto object-contain transition-transform duration-500 hover:scale-105 drop-shadow-md relative z-10"
+                referrerPolicy="no-referrer"
+                id="wedding-brand-logo"
+              />
             </div>
-          )}
 
-          {isRoleChosen && guestSubmitted && activeTab === 'guest' && (
-            <div className="w-full max-w-md mx-auto text-center mt-3" id="compact-guest-header-success-container">
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl leading-relaxed text-xs text-emerald-800 space-y-2 animate-fade-in shadow-sm">
-                <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center mx-auto border border-emerald-300/40">
-                  <Heart className="w-4 h-4 text-emerald-600 fill-emerald-500 animate-pulse" />
-                </div>
-                <h4 className="font-serif font-bold text-emerald-900">ទទួលបានព័ត៌មានជោគជ័យ!</h4>
-                <p className="text-[11px] text-emerald-700 font-sans">សូមអរគុណសម្រាប់ការចូលរួមចំណងដៃ និងសរសេរពាក្យជូនពរដ៏មានតម្លៃ!</p>
+            {/* Glowing System Brand Header */}
+            <div className="space-y-1 text-center flex flex-col items-center relative z-10 max-w-2xl">
+              <h1 className="font-serif text-lg sm:text-2xl md:text-3xl font-extrabold tracking-wide sm:tracking-widest text-khmer-red uppercase leading-snug drop-shadow-sm glow-text-gold">
+                សៀវភៅមាស កត់ចំណងដៃអាពាហ៍ពិពាហ៍
+              </h1>
+              <p className="font-serif text-[10px] sm:text-xs font-bold text-khmer-gold-dark mt-1 tracking-widest uppercase">
+                ✦ Gift Registry & Guestbook System ✦
+              </p>
+            </div>
+
+            <KbachDivider />
+
+            {/* Immersive Beautiful Couple Announcement Segment */}
+            <div className="bg-amber-50/40 border border-khmer-gold/25 rounded-2xl p-4 sm:p-6 mb-8 max-w-2xl w-full text-center flex flex-col items-center relative z-10 shadow-inner">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-khmer-gold to-transparent"></div>
+              <span className="text-[9px] sm:text-[11px] font-extrabold text-khmer-gold-dark uppercase tracking-wider font-serif mb-1.5">
+                មហាមង្គលការ សិរីសួស្តី អាពាហ៍ពិពាហ៍គូស្វាមីភរិយាថ្មី
+              </span>
+              
+              {/* Couple visual representation */}
+              <div className="flex items-center justify-center gap-2 sm:gap-4 my-2">
+                <span className="text-slate-400 font-serif text-[10px] hidden sm:block">GROOM</span>
+                <span className="text-sm sm:text-lg font-bold text-khmer-red-dark bg-white shadow-sm border border-khmer-gold/25 px-3 py-1 rounded-lg">
+                  កូនកំលោះ <span className="text-khmer-gold font-sans font-black">ទូច ចាន់ដារ៉ាហៀង</span>
+                </span>
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-khmer-red">
+                  <Heart className="w-5 h-5 fill-current text-khmer-red animate-pulse-heart" />
+                </span>
+                <span className="text-sm sm:text-lg font-bold text-khmer-red-dark bg-white shadow-sm border border-khmer-gold/25 px-3 py-1 rounded-lg">
+                  កូនក្រមុំ <span className="text-khmer-gold font-sans font-black">ប៉េន ស្រីមុំ</span>
+                </span>
+                <span className="text-slate-400 font-serif text-[10px] hidden sm:block">BRIDE</span>
+              </div>
+              
+              <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed font-sans px-2 max-w-md mt-2">
+                សូមគោរពអញ្ជើញ ឯកឧត្តម លោកជំទាវ លោកប្រុស លោកស្រី ជ្រើសរើសតួនាទីដើម្បីចូលរួមជូនពរជ័យ កត់ចំណងដៃអេឡិចត្រូនិច និងអបអរសាទរគូស្រករថ្មី។
+              </p>
+            </div>
+
+            {/* Redesigned SUPER-PREMIUM Role Selection Cards */}
+            <div className="w-full max-w-4xl relative z-10" id="role-selector-modern">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <span className="h-[1px] bg-slate-200 w-12"></span>
+                <p className="text-[10px] sm:text-xs font-bold text-khmer-gold-dark uppercase tracking-widest font-serif">
+                  សូមជ្រើសរើសតួនាទីដើម្បីបន្ត (SELECT PROCESS ROLE)
+                </p>
+                <span className="h-[1px] bg-slate-200 w-12"></span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                {/* 1. Guest Selector Card */}
                 <button
+                  id="select-role-guest-btn"
                   onClick={() => {
-                    setGuestSubmitted(false);
-                    localStorage.removeItem('wedding_guest_submitted');
+                    if (activeRole !== 'admin') {
+                      setActiveRole('user');
+                    }
+                    setActiveTab('guest');
+                    setIsRoleChosen(true);
                   }}
-                  className="text-[10px] text-slate-500 hover:text-slate-800 underline font-extrabold transition-all duration-200 cursor-pointer block mx-auto"
+                  className="group flex flex-col items-center p-5 sm:p-6 rounded-2xl border-2 border-slate-200/70 bg-white hover:border-khmer-red hover:bg-[#FFF9FA] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-red/5 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[190px]"
                 >
-                  កែប្រែ ឬបន្ថែមព័ត៌មានជាថ្មី (Submit another)
+                  <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
+                  
+                  {/* Circle Icon Container */}
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-rose-50 text-khmer-red border-2 border-rose-100 group-hover:bg-khmer-red group-hover:text-white group-hover:border-khmer-gold group-hover:shadow-md group-hover:scale-110">
+                    <Compass className="w-6 h-6" />
+                  </div>
+
+                  <span className="font-serif text-sm font-black text-slate-800 group-hover:text-khmer-red leading-tight transition-colors">
+                    ភ្ញៀវកិត្តិយស (GUEST)
+                  </span>
+                  <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
+                    ✍️ ជូនពរ និងកត់ចំណងដៃ
+                  </span>
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                    ចុះឈ្មោះចូលរួម កត់ចំនួនទឹកប្រាក់ចំណងដៃ និងសរសេរពាក្យជូនពរផ្អែមល្ហែមដល់គូមង្គល។
+                  </p>
+                </button>
+
+                {/* 2. Host Selector Card */}
+                <button
+                  id="select-role-host-btn"
+                  onClick={() => {
+                    setActiveTab('host');
+                    if (activeRole === 'admin') {
+                      // Stay admin
+                    } else if (loggedInHost) {
+                      setActiveRole('host');
+                    } else {
+                      setActiveRole('user');
+                    }
+                    setIsRoleChosen(true);
+                  }}
+                  className="group flex flex-col items-center p-5 sm:p-6 rounded-2xl border-2 border-slate-200/70 bg-white hover:border-khmer-gold hover:bg-[#FFFDF9] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-gold/15 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[190px]"
+                >
+                  <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
+
+                  {/* Circle Icon Container */}
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-amber-50 text-khmer-gold-dark border-2 border-amber-100 group-hover:bg-khmer-gold group-hover:text-khmer-red-dark group-hover:border-khmer-red group-hover:shadow-md group-hover:scale-110">
+                    <Heart className="w-6 h-6 group-hover:fill-current" />
+                  </div>
+
+                  <span className="font-serif text-sm font-black text-slate-800 group-hover:text-khmer-gold-dark leading-tight transition-colors">
+                    ម្ចាស់ដើមការ (HOST)
+                  </span>
+                  <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
+                    👰🤵 ពិនិត្យក្ដារព័ត៌មាន
+                  </span>
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                    មើលបញ្ជីចំណងដៃសរុប ចំនួនភ្ញៀវចូលរួម និងទស្សនាក្ដារជូនពរដែលបានអនុម័តផ្ទាល់។
+                  </p>
+                </button>
+
+                {/* 3. Admin Selector Card */}
+                <button
+                  id="select-role-admin-btn"
+                  onClick={() => {
+                    setActiveTab('admin');
+                    if (activeRole === 'admin') {
+                      // Stay admin
+                    } else {
+                      setActiveRole('user');
+                    }
+                    setIsRoleChosen(true);
+                  }}
+                  className="group flex flex-col items-center p-5 sm:p-6 rounded-2xl border-2 border-slate-200/70 bg-white hover:border-slate-800 hover:bg-slate-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[190px]"
+                >
+                  <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
+
+                  {/* Circle Icon Container */}
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-slate-100 text-slate-600 border-2 border-slate-200 group-hover:bg-slate-800 group-hover:text-white group-hover:border-khmer-gold group-hover:shadow-md group-hover:scale-110">
+                    <Lock className="w-6 h-6" />
+                  </div>
+
+                  <span className="font-serif text-sm font-black text-slate-800 group-hover:text-slate-950 leading-tight transition-colors">
+                    អ្នកគ្រប់គ្រង (ADMIN)
+                  </span>
+                  <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
+                    🔑 គ្រប់គ្រងប្រព័ន្ធ
+                  </span>
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                    សិទ្ធិគ្រប់គ្រងខ្ពស់បំផុត កែសម្រួល អនុម័ត និងលុបចំណងដៃ ឬបង្កើតគណនីម្ចាស់ការ។
+                  </p>
                 </button>
               </div>
             </div>
-          )}
 
-          {/* Centered Integrated Role Selector */}
-          <div className="w-full max-w-xl mt-4 pt-4 border-t border-slate-100" id="role-selector-modern">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3.5 gap-2 px-1">
-              <p className="text-[10px] sm:text-xs font-bold text-khmer-gold-dark uppercase tracking-widest font-serif text-center sm:text-left">
-                {isRoleChosen ? 'ប្តូរតួនាទីទិដ្ឋភាព (SWITCH ACTIVE ROLE)' : 'សូមជ្រើសរើសតួនាទីដើម្បីបន្ត (SELECT YOUR ROLE)'}
-              </p>
-              <div className="flex items-center justify-center gap-1.5">
-                {isRoleChosen && (
-                  <button
-                    onClick={() => setIsRoleChosen(false)}
-                    className="text-[10px] bg-amber-500 text-white hover:bg-amber-600 px-2.5 py-1 rounded border border-amber-500 font-bold transition-all flex items-center gap-1 cursor-pointer shadow-sm"
-                    id="welcome-back-btn"
-                  >
-                    🏠 បង្ហាញផ្ទាំងស្វាគមន៍ (Show Welcome)
-                  </button>
-                )}
+            {/* Sync Status Frame */}
+            <div className="mt-8 pt-4 border-t border-slate-100 w-full flex justify-center text-xs relative z-10">
+              {isDbReal ? (
+                <span className="bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full border border-emerald-200 flex items-center gap-1.5 font-sans font-medium transition-all hover:scale-105">
+                  <Database className="w-3.5 h-3.5 text-emerald-500" /> ទិន្នន័យ៖ អនឡាញពិត (Live Cloud Syncing Ready)
+                </span>
+              ) : (
+                <span className="bg-amber-50 text-amber-700 px-3.5 py-1.5 rounded-full border border-amber-200 flex items-center gap-1.5 font-sans font-medium transition-all hover:scale-105">
+                  <Database className="w-3.5 h-3.5 text-amber-500" /> ទិន្នន័យ៖ មូលដ្ឋានសិប្បនិម្មិត (Demo / LocalStorage)
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* Active View Minimalist Elegant Status bar & Compact Tab Switcher */
+          <div className="bg-white/95 rounded-2xl p-5 md:p-6 kbach-border-gold shadow-md text-center relative overflow-hidden flex flex-col items-center animate-fade-in">
+            <div className="absolute inset-0 khmer-pattern-bg opacity-[0.02] pointer-events-none"></div>
+            
+            {/* Top row alignment with active role presentation and welcome link */}
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <img 
+                  src="/logo123.png" 
+                  alt="SNEHA Logo" 
+                  className="h-8 w-auto object-contain"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="text-left">
+                  <span className="block text-[8px] uppercase tracking-widest text-khmer-gold-dark font-extrabold font-serif">SNEHA SYSTEMS</span>
+                  <span className="block text-xs font-serif font-extrabold text-khmer-red-dark">មង្គលការ ទូច ចាន់ដារ៉ាហៀង 💖 ប៉េន ស្រីមុំ</span>
+                </div>
+              </div>
+
+              {/* Active role readout bar selection code */}
+              <div className="flex items-center gap-1.5 bg-rose-50/50 px-3.5 py-1.5 rounded-full border border-rose-100 text-xs font-serif">
+                <span className="text-slate-500">តួនាទីសកម្ម៖</span>
+                <span className="font-black text-khmer-red-dark uppercase tracking-wider flex items-center gap-1">
+                  {activeTab === 'guest' ? '✍️ ភ្ញៀវចំណងដៃ' : activeTab === 'host' ? '👰🤵 ម្ចាស់ការ' : '🔑 អ្នកគ្រប់គ្រង Admin'}
+                </span>
+              </div>
+
+              {/* Action buttons list */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setIsRoleChosen(false)}
+                  className="text-[10px] bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg border border-amber-500 font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow"
+                  id="welcome-back-btn"
+                >
+                  🏠 ផ្ទាំងស្វាគមន៍ (Show Welcome)
+                </button>
                 {activeRole !== 'user' && (
                   <button
                     onClick={handleLogout}
-                    className="text-[10px] bg-rose-50 text-rose-700 hover:bg-rose-100 px-2.5 py-1 rounded border border-rose-200/40 font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="text-[10px] bg-rose-50 text-rose-700 hover:bg-rose-100 px-3 py-1.5 rounded-lg border border-rose-200/40 font-extrabold transition-all flex items-center gap-1 cursor-pointer"
                     id="header-logout-btn"
                   >
                     <Lock className="w-3 h-3 text-rose-500" /> ចាកចេញ (Log Out)
@@ -390,84 +510,94 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {/* 1. Guest Selector Card */}
-              <button
-                id="select-role-guest-btn"
-                onClick={() => {
-                  if (activeRole !== 'admin') {
-                    setActiveRole('user');
-                  }
-                  setActiveTab('guest');
-                  setIsRoleChosen(true);
-                }}
-                className={`flex flex-col items-center p-3.5 rounded-xl border-2 transition-all cursor-pointer ${
-                  activeTab === 'guest'
-                    ? 'border-khmer-red bg-rose-50/10 shadow-sm scale-[1.01]'
-                    : 'border-slate-200/60 bg-white hover:border-khmer-gold/40 hover:bg-slate-50'
-                }`}
-              >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 ${activeTab === 'guest' ? 'bg-khmer-red text-white' : 'bg-slate-100 text-slate-500'}`}>
-                  <Compass className="w-4.5 h-4.5" />
-                </div>
-                <span className="font-serif text-xs font-bold text-khmer-red-dark">ភ្ញៀវ (Guest)</span>
-                <span className="text-[9px] text-slate-400 mt-0.5 font-sans">ចុះឈ្មោះចំណងដៃ</span>
-              </button>
+            {/* Quick compact selector tabs to swap roles in-place inside the app without returning */}
+            <div className="w-full mt-4 flex flex-col items-center">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 font-serif">
+                ប្តូរតួនាទីទិដ្ឋភាពរហ័ស (Quick Switch Role View)
+              </span>
+              <div className="grid grid-cols-3 gap-2 w-full max-w-xl">
+                {/* Slim Guest Button */}
+                <button
+                  onClick={() => {
+                    if (activeRole !== 'admin') {
+                      setActiveRole('user');
+                    }
+                    setActiveTab('guest');
+                  }}
+                  className={`py-1.5 px-2 rounded-xl border text-[10px] font-extrabold transition-all cursor-pointer text-center ${
+                    activeTab === 'guest'
+                      ? 'border-khmer-red bg-khmer-red text-white shadow-sm ring-1 ring-khmer-red'
+                      : 'border-slate-200 bg-white text-slate-600 hover:border-khmer-gold hover:bg-slate-50'
+                  }`}
+                >
+                  ភ្ញៀវ (Guest)
+                </button>
 
-              {/* 2. Host Selector Card */}
-              <button
-                id="select-role-host-btn"
-                onClick={() => {
-                  setActiveTab('host');
-                  if (activeRole === 'admin') {
-                    // Stay admin
-                  } else if (loggedInHost) {
-                    setActiveRole('host');
-                  } else {
-                    setActiveRole('user');
-                  }
-                  setIsRoleChosen(true);
-                }}
-                className={`flex flex-col items-center p-3.5 rounded-xl border-2 transition-all cursor-pointer ${
-                  activeTab === 'host'
-                    ? 'border-khmer-red bg-rose-50/10 shadow-sm scale-[1.01]'
-                    : 'border-slate-200/60 bg-white hover:border-khmer-gold/40 hover:bg-slate-50'
-                }`}
-              >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 ${activeTab === 'host' ? 'bg-khmer-red text-white' : 'bg-slate-100 text-slate-500'}`}>
-                  <Heart className={`w-4.5 h-4.5 ${activeTab === 'host' ? 'fill-current text-white' : ''}`} />
-                </div>
-                <span className="font-serif text-xs font-bold text-khmer-red-dark">ម្ចាស់ដើមការ (Host)</span>
-                <span className="text-[9px] text-slate-400 mt-0.5 font-sans">បង្ហាញតារាងព័ត៌មាន</span>
-              </button>
+                {/* Slim Host Button */}
+                <button
+                  onClick={() => {
+                    setActiveTab('host');
+                    if (activeRole === 'admin') {
+                      // Stay admin
+                    } else if (loggedInHost) {
+                      setActiveRole('host');
+                    } else {
+                      setActiveRole('user');
+                    }
+                  }}
+                  className={`py-1.5 px-2 rounded-xl border text-[10px] font-extrabold transition-all cursor-pointer text-center ${
+                    activeTab === 'host'
+                      ? 'border-khmer-red bg-khmer-red text-white shadow-sm ring-1 ring-khmer-red'
+                      : 'border-slate-200 bg-white text-slate-600 hover:border-khmer-gold hover:bg-slate-50'
+                  }`}
+                >
+                  ម្ចាស់ការ (Host)
+                </button>
 
-              {/* 3. Admin Selector Card */}
+                {/* Slim Admin Button */}
+                <button
+                  onClick={() => {
+                    setActiveTab('admin');
+                    if (activeRole === 'admin') {
+                      // Stay admin
+                    } else {
+                      setActiveRole('user');
+                    }
+                  }}
+                  className={`py-1.5 px-2 rounded-xl border text-[10px] font-extrabold transition-all cursor-pointer text-center ${
+                    activeTab === 'admin'
+                      ? 'border-khmer-red bg-khmer-red text-white shadow-sm ring-1 ring-khmer-red'
+                      : 'border-slate-200 bg-white text-slate-600 hover:border-khmer-gold hover:bg-slate-50'
+                  }`}
+                >
+                  គ្រប់គ្រង (Admin)
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isRoleChosen && guestSubmitted && activeTab === 'guest' && (
+          <div className="w-full max-w-md mx-auto text-center mt-3 animate-fade-in" id="compact-guest-header-success-container">
+            <div className="p-5 bg-emerald-50 border border-emerald-250 rounded-2xl leading-relaxed text-xs text-emerald-800 space-y-3 shadow-md">
+              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto border border-emerald-300/40">
+                <Heart className="w-5 h-5 text-emerald-600 fill-emerald-500 animate-pulse" />
+              </div>
+              <h4 className="font-serif font-extrabold text-emerald-950 text-sm">ទទួលបានព័ត៌មានជោគជ័យ!</h4>
+              <p className="text-[11px] text-emerald-700 font-sans">សូមអរគុណសម្រាប់ការចូលរួមចំណងដៃ និងសរសេរពាក្យជូនពរដ៏មានតម្លៃដល់គូប្រលងថ្មី!</p>
               <button
-                id="select-role-admin-btn"
                 onClick={() => {
-                  setActiveTab('admin');
-                  if (activeRole === 'admin') {
-                    // Stay admin
-                  } else {
-                    setActiveRole('user');
-                  }
-                  setIsRoleChosen(true);
+                  setGuestSubmitted(false);
+                  localStorage.removeItem('wedding_guest_submitted');
                 }}
-                className={`flex flex-col items-center p-3.5 rounded-xl border-2 transition-all cursor-pointer ${
-                  activeTab === 'admin'
-                    ? 'border-khmer-red bg-rose-50/10 shadow-sm scale-[1.01]'
-                    : 'border-slate-200/60 bg-white hover:border-khmer-gold/40 hover:bg-slate-50'
-                }`}
+                className="text-[10px] bg-white border border-emerald-200 hover:bg-emerald-100/50 px-3 py-1 rounded text-slate-600 shadow-sm transition-all font-extrabold cursor-pointer block mx-auto"
               >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 ${activeTab === 'admin' ? 'bg-khmer-red text-white' : 'bg-slate-100 text-slate-500'}`}>
-                  <Lock className="w-4.5 h-4.5" />
-                </div>
-                <span className="font-serif text-xs font-bold text-khmer-red-dark">អ្នកគ្រប់គ្រង (Admin)</span>
-                <span className="text-[9px] text-slate-400 mt-0.5 font-sans">បង្ហាញមុខងារទាំងអស់</span>
+                កែប្រែ ឬបន្ថែមព័ត៌មានជាថ្មី (Submit another)
               </button>
             </div>
           </div>
-        </div>
+        )}
+
 
         {/* Dynamic Display of Core Sections inside classic Kbach frames */}
         {isRoleChosen && !(activeTab === 'guest' && guestSubmitted) && (
@@ -667,7 +797,7 @@ export default function App() {
       {/* Decorative Traditional Footer */}
       <footer className="text-center mt-auto pt-10 pb-6 text-[10px] text-slate-400 font-sans tracking-wide relative z-10 flex flex-col items-center gap-1.5">
         <p>⚜️ កម្មវិធីចុះឈ្មោះចំណងដៃអាពាហ៍ពិពាហ៍ប្រពៃណីខ្មែរទំនើប ⚜️</p>
-        <p className="mt-0.5">© {new Date().getFullYear()} Sopheak & Thida Wedding Celebration. All Rights Reserved.</p>
+        <p className="mt-0.5">© {new Date().getFullYear()} Heang & Sreymom Wedding Celebration. All Rights Reserved.</p>
         <button
           onClick={() => setShowSimulator(prev => !prev)}
           className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded text-[9px] uppercase font-bold transition-all border border-slate-200/60 cursor-pointer"

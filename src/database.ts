@@ -16,21 +16,21 @@ const DEFAULT_HOSTS: HostAccount[] = [
     id: 'default-host-1',
     username: 'hieng',
     password_hash: '123',
-    fullname: 'កូនកំលោះ ហៀង (Hieng)',
+    fullname: 'កូនកំលោះ ទូច ចាន់ដារ៉ាហៀង (Touch Chandarahieng)',
     created_at: new Date().toISOString()
   },
   {
     id: 'default-host-2',
     username: 'sreymom',
     password_hash: '123',
-    fullname: 'កូនក្រមុំ ស្រីមុំ (Sreymom)',
+    fullname: 'កូនក្រមុំ ប៉េន ស្រីមុំ (Pen Sreymom)',
     created_at: new Date().toISOString()
   },
   {
     id: 'default-host-3',
     username: 'heang',
     password_hash: '619966',
-    fullname: 'ម្ចាស់ដើមការ ហៀង (Heang)',
+    fullname: 'ម្ចាស់ដើមការ ទូច ចាន់ដារ៉ាហៀង (Touch Chandarahieng)',
     created_at: new Date().toISOString()
   }
 ];
@@ -50,7 +50,7 @@ function getLocalHosts(): HostAccount[] {
         id: 'default-host-3',
         username: 'heang',
         password_hash: '619966',
-        fullname: 'ម្ចាស់ដើមការ ហៀង (Heang)',
+        fullname: 'ម្ចាស់ដើមការ ទូច ចាន់ដារ៉ាហៀង (Touch Chandarahieng)',
         created_at: new Date().toISOString()
       });
       localStorage.setItem(HOST_DB_KEY, JSON.stringify(list));

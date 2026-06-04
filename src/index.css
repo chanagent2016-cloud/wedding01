@@ -55,3 +55,58 @@ body {
   opacity: 0.05;
 }
 
+/* Luxury animations and layout effects */
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(194, 145, 36, 0.2), 0 0 15px rgba(194, 145, 36, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(194, 145, 36, 0.5), 0 0 30px rgba(194, 145, 36, 0.25);
+  }
+}
+
+@keyframes pulse-heart {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(220, 38, 38, 0.1));
+  }
+  50% {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.5));
+  }
+}
+
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 3s infinite ease-in-out;
+}
+
+.animate-pulse-heart {
+  animation: pulse-heart 1.8s infinite ease-in-out;
+}
+
+.animate-float-gentle {
+  animation: float-gentle 4s infinite ease-in-out;
+}
+
+.glow-text-gold {
+  text-shadow: 0 0 8px rgba(247, 230, 184, 0.4);
+}
+
+.luxury-card-shadow {
+  box-shadow: 0 10px 30px -10px rgba(92, 0, 11, 0.08), 0 1px 3px rgba(194, 145, 36, 0.05);
+}
+
+.luxury-card-shadow-gold {
+  box-shadow: 0 12px 40px -12px rgba(194, 145, 36, 0.25), 0 2px 8px rgba(194, 145, 36, 0.1);
+}
+
+
