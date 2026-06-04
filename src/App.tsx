@@ -289,15 +289,17 @@ export default function App() {
             <div className="absolute inset-0 khmer-pattern-bg opacity-[0.03] pointer-events-none"></div>
 
             {/* SNEHA WEDDING & CEREMONY Brand logo */}
-            <div className="mb-4 sm:mb-6 flex justify-center items-center relative group">
-              <div className="absolute -inset-2 bg-gradient-to-r from-khmer-gold/0 via-khmer-gold/15 to-khmer-gold/0 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-              <img 
-                src="/logo123.png" 
-                alt="SNEHA WEDDING & CEREMONY" 
-                className="h-28 sm:h-36 w-auto object-contain transition-transform duration-500 hover:scale-105 drop-shadow-md relative z-10"
-                referrerPolicy="no-referrer"
-                id="wedding-brand-logo"
-              />
+            <div className="mb-4 sm:mb-6 flex justify-center items-center relative group select-none">
+              <div className="absolute -inset-1.5 bg-gradient-to-r from-khmer-gold/10 via-khmer-gold/45 to-khmer-gold/10 rounded-2xl blur-sm opacity-80 group-hover:opacity-100 transition duration-500"></div>
+              <div className="bg-white p-3.5 sm:p-4 rounded-2xl border-2 border-khmer-gold/35 shadow-lg relative z-10 flex items-center justify-center">
+                <img 
+                  src="/logo123.png" 
+                  alt="SNEHA WEDDING & CEREMONY" 
+                  className="h-28 sm:h-32 w-auto object-contain transition-transform duration-500 hover:scale-[1.02]"
+                  referrerPolicy="no-referrer"
+                  id="wedding-brand-logo"
+                />
+              </div>
             </div>
 
             {/* Glowing System Brand Header */}
@@ -313,30 +315,53 @@ export default function App() {
             <KbachDivider />
 
             {/* Immersive Beautiful Couple Announcement Segment */}
-            <div className="bg-amber-50/40 border border-khmer-gold/25 rounded-2xl p-4 sm:p-6 mb-8 max-w-2xl w-full text-center flex flex-col items-center relative z-10 shadow-inner">
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-khmer-gold to-transparent"></div>
-              <span className="text-[9px] sm:text-[11px] font-extrabold text-khmer-gold-dark uppercase tracking-wider font-serif mb-1.5">
-                មហាមង្គលការ សិរីសួស្តី អាពាហ៍ពិពាហ៍គូស្វាមីភរិយាថ្មី
+            <div className="bg-gradient-to-br from-[#FFF9FA] via-[#FFFDF9] to-[#FFF9FA] border border-khmer-gold/30 rounded-3xl p-5 sm:p-7 mb-8 max-w-2xl w-full text-center flex flex-col items-center relative z-10 shadow-lg shadow-rose-950/[0.02]">
+              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-48 h-2 bg-gradient-to-r from-transparent via-khmer-gold to-transparent rounded-full opacity-60"></div>
+              
+              <span className="text-[10px] sm:text-xs font-black text-khmer-gold-dark uppercase tracking-widest font-serif mb-3 flex items-center gap-1.5">
+                🌸 សិរីសួស្តី អាពាហ៍ពិពាហ៍គូស្វាមីភរិយាថ្មី 🌸
               </span>
               
               {/* Couple visual representation */}
-              <div className="flex items-center justify-center gap-2 sm:gap-4 my-2">
-                <span className="text-slate-400 font-serif text-[10px] hidden sm:block">GROOM</span>
-                <span className="text-sm sm:text-lg font-bold text-khmer-red-dark bg-white shadow-sm border border-khmer-gold/25 px-3 py-1 rounded-lg">
-                  កូនកំលោះ <span className="text-khmer-gold font-sans font-black">ទូច ចាន់ដារ៉ាហៀង</span>
-                </span>
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-khmer-red">
-                  <Heart className="w-5 h-5 fill-current text-khmer-red animate-pulse-heart" />
-                </span>
-                <span className="text-sm sm:text-lg font-bold text-khmer-red-dark bg-white shadow-sm border border-khmer-gold/25 px-3 py-1 rounded-lg">
-                  កូនក្រមុំ <span className="text-khmer-gold font-sans font-black">ប៉េន ស្រីមុំ</span>
-                </span>
-                <span className="text-slate-400 font-serif text-[10px] hidden sm:block">BRIDE</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full my-3">
+                
+                {/* Groom Box */}
+                <div className="flex-1 w-full bg-white border border-rose-100 hover:border-khmer-gold/40 rounded-2xl p-3 shadow-sm transition-all duration-300 hover:shadow flex flex-col items-center relative overflow-hidden group/couple-box">
+                  <span className="absolute top-1 left-2 text-[8px] font-serif font-extrabold text-slate-300 tracking-wider">GROOM</span>
+                  <div className="w-1.5 h-6 bg-khmer-gold/30 absolute left-0 top-1/2 -translate-y-1/2 rounded-r-md"></div>
+                  <span className="text-[10px] text-slate-400 font-serif font-bold uppercase">កូនកំលោះ</span>
+                  <span className="text-sm sm:text-base font-black text-khmer-red-dark mt-1 font-serif group-hover/couple-box:text-khmer-red transition-all">
+                    ទូច ចាន់ដារ៉ាហៀង
+                  </span>
+                </div>
+
+                {/* Animated Central Heart Container */}
+                <div className="relative flex items-center justify-center py-1 sm:py-0 select-none">
+                  <div className="absolute w-12 h-12 rounded-full bg-rose-50/70 border border-rose-100/40 animate-ping opacity-40"></div>
+                  <div className="w-10 h-10 rounded-full bg-[#FFF0F2] flex items-center justify-center text-khmer-red shadow-inner relative z-10 border border-rose-100 animate-pulse-heart">
+                    <Heart className="w-5 h-5 fill-current text-khmer-red" />
+                  </div>
+                </div>
+
+                {/* Bride Box */}
+                <div className="flex-1 w-full bg-white border border-rose-100 hover:border-khmer-gold/40 rounded-2xl p-3 shadow-sm transition-all duration-300 hover:shadow flex flex-col items-center relative overflow-hidden group/couple-box">
+                  <span className="absolute top-1 right-2 text-[8px] font-serif font-extrabold text-slate-300 tracking-wider">BRIDE</span>
+                  <div className="w-1.5 h-6 bg-khmer-gold/30 absolute right-0 top-1/2 -translate-y-1/2 rounded-l-md"></div>
+                  <span className="text-[10px] text-slate-400 font-serif font-bold uppercase">កូនក្រមុំ</span>
+                  <span className="text-sm sm:text-base font-black text-khmer-red-dark mt-1 font-serif group-hover/couple-box:text-khmer-red transition-all">
+                    ប៉េន ស្រីមុំ
+                  </span>
+                </div>
+
               </div>
               
-              <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed font-sans px-2 max-w-md mt-2">
-                សូមគោរពអញ្ជើញ ឯកឧត្តម លោកជំទាវ លោកប្រុស លោកស្រី ជ្រើសរើសតួនាទីដើម្បីចូលរួមជូនពរជ័យ កត់ចំណងដៃអេឡិចត្រូនិច និងអបអរសាទរគូស្រករថ្មី។
-              </p>
+              <div className="mt-2.5 flex items-center gap-2 max-w-md">
+                <span className="text-khmer-gold text-lg select-none">✦</span>
+                <p className="text-[11px] sm:text-[11.5px] text-slate-500 leading-relaxed font-medium font-sans">
+                  សូមគោរពអញ្ជើញ ឯកឧត្តម លោកជំទាវ លោកប្រុស លោកស្រី ជ្រើសរើសតួនាទីខាងក្រោម ដើម្បីចូលរួមប្រសិទ្ធពរជ័យ កត់ចំណងដៃ និងអបអរសាទរថ្ងៃមង្គលការ។
+                </p>
+                <span className="text-khmer-gold text-lg select-none">✦</span>
+              </div>
             </div>
 
             {/* Redesigned SUPER-PREMIUM Role Selection Cards */}
@@ -349,7 +374,7 @@ export default function App() {
                 <span className="h-[1px] bg-slate-200 w-12"></span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
                 {/* 1. Guest Selector Card */}
                 <button
                   id="select-role-guest-btn"
@@ -360,24 +385,32 @@ export default function App() {
                     setActiveTab('guest');
                     setIsRoleChosen(true);
                   }}
-                  className="group flex flex-col items-center p-5 sm:p-6 rounded-2xl border-2 border-slate-200/70 bg-white hover:border-khmer-red hover:bg-[#FFF9FA] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-red/5 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[190px]"
+                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-rose-100/60 bg-gradient-to-b from-white to-[#FEFBFB] hover:border-khmer-red hover:from-white hover:to-[#FFF5F6] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-red/5 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none"
                 >
                   <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
                   
-                  {/* Circle Icon Container */}
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-rose-50 text-khmer-red border-2 border-rose-100 group-hover:bg-khmer-red group-hover:text-white group-hover:border-khmer-gold group-hover:shadow-md group-hover:scale-110">
-                    <Compass className="w-6 h-6" />
+                  <div className="flex flex-col items-center w-full">
+                    {/* Circle Icon Container */}
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-rose-50 text-khmer-red border-2 border-rose-100 group-hover:bg-khmer-red group-hover:text-white group-hover:border-khmer-gold group-hover:shadow-md group-hover:scale-110">
+                      <Compass className="w-6 h-6 animate-float-gentle" />
+                    </div>
+
+                    <span className="font-serif text-sm font-black text-slate-800 group-hover:text-khmer-red leading-tight transition-colors">
+                      ភ្ញៀវកិត្តិយស (GUEST)
+                    </span>
+                    <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
+                      ✍️ ជូនពរ និងកត់ចំណងដៃ
+                    </span>
+                    <p className="text-[9px] sm:text-[10.5px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                      ចុះឈ្មោះចូលរួម កត់ចំនួនទឹកប្រាក់ចំណងដៃ និងសរសេរពាក្យជូនពរផ្អែមល្ហែមដល់គូមង្គល។
+                    </p>
                   </div>
 
-                  <span className="font-serif text-sm font-black text-slate-800 group-hover:text-khmer-red leading-tight transition-colors">
-                    ភ្ញៀវកិត្តិយស (GUEST)
-                  </span>
-                  <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
-                    ✍️ ជូនពរ និងកត់ចំណងដៃ
-                  </span>
-                  <p className="text-[9px] sm:text-[10px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
-                    ចុះឈ្មោះចូលរួម កត់ចំនួនទឹកប្រាក់ចំណងដៃ និងសរសេរពាក្យជូនពរផ្អែមល្ហែមដល់គូមង្គល។
-                  </p>
+                  {/* Explicit Action Call Button */}
+                  <div className="w-full mt-4 bg-khmer-red hover:bg-khmer-red-dark text-white rounded-xl py-2 px-4 font-serif text-[11px] font-bold tracking-wider transition-colors shadow-sm group-hover:shadow flex items-center justify-center gap-1">
+                    <span>ចាប់ផ្ដើមចុះឈ្មោះ</span>
+                    <span>➜</span>
+                  </div>
                 </button>
 
                 {/* 2. Host Selector Card */}
@@ -394,24 +427,32 @@ export default function App() {
                     }
                     setIsRoleChosen(true);
                   }}
-                  className="group flex flex-col items-center p-5 sm:p-6 rounded-2xl border-2 border-slate-200/70 bg-white hover:border-khmer-gold hover:bg-[#FFFDF9] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-gold/15 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[190px]"
+                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-amber-100/50 bg-gradient-to-b from-white to-[#FCFBF8] hover:border-khmer-gold hover:from-white hover:to-[#FFFDF9] hover:-translate-y-1 hover:shadow-xl hover:shadow-khmer-gold/10 transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none"
                 >
                   <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
 
-                  {/* Circle Icon Container */}
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-amber-50 text-khmer-gold-dark border-2 border-amber-100 group-hover:bg-khmer-gold group-hover:text-khmer-red-dark group-hover:border-khmer-red group-hover:shadow-md group-hover:scale-110">
-                    <Heart className="w-6 h-6 group-hover:fill-current" />
+                  <div className="flex flex-col items-center w-full">
+                    {/* Circle Icon Container */}
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-amber-50 text-khmer-gold-dark border-2 border-amber-100 group-hover:bg-khmer-gold group-hover:text-white group-hover:border-khmer-red group-hover:shadow-md group-hover:scale-110">
+                      <Heart className="w-6 h-6 group-hover:fill-current" />
+                    </div>
+
+                    <span className="font-serif text-sm font-black text-slate-800 group-hover:text-khmer-gold-dark leading-tight transition-colors">
+                      ម្ចាស់ដើមការ (HOST)
+                    </span>
+                    <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
+                      👰🤵 ពិនិត្យក្ដារព័ត៌មាន
+                    </span>
+                    <p className="text-[9px] sm:text-[10.5px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                      មើលបញ្ជីចំណងដៃសរុប ចំនួនភ្ញៀវចូលរួម និងទស្សនាក្ដារជូនពរដែលបានអនុម័តផ្ទាល់។
+                    </p>
                   </div>
 
-                  <span className="font-serif text-sm font-black text-slate-800 group-hover:text-khmer-gold-dark leading-tight transition-colors">
-                    ម្ចាស់ដើមការ (HOST)
-                  </span>
-                  <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
-                    👰🤵 ពិនិត្យក្ដារព័ត៌មាន
-                  </span>
-                  <p className="text-[9px] sm:text-[10px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
-                    មើលបញ្ជីចំណងដៃសរុប ចំនួនភ្ញៀវចូលរួម និងទស្សនាក្ដារជូនពរដែលបានអនុម័តផ្ទាល់។
-                  </p>
+                  {/* Explicit Action Call Button */}
+                  <div className="w-full mt-4 bg-[#C29124] hover:bg-[#A67B1E] text-white rounded-xl py-2 px-4 font-serif text-[11px] font-bold tracking-wider transition-colors shadow-sm group-hover:shadow flex items-center justify-center gap-1">
+                    <span>ចូលពិនិត្យរបាយការណ៍</span>
+                    <span>➜</span>
+                  </div>
                 </button>
 
                 {/* 3. Admin Selector Card */}
@@ -426,24 +467,32 @@ export default function App() {
                     }
                     setIsRoleChosen(true);
                   }}
-                  className="group flex flex-col items-center p-5 sm:p-6 rounded-2xl border-2 border-slate-200/70 bg-white hover:border-slate-800 hover:bg-slate-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[190px]"
+                  className="group flex flex-col items-center justify-between p-6 rounded-2xl border-2 border-slate-200/50 bg-gradient-to-b from-white to-slate-50 hover:border-slate-800 hover:from-white hover:to-slate-100 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 transform cursor-pointer text-center relative overflow-hidden h-full min-h-[260px] select-none"
                 >
                   <div className="absolute inset-0 khmer-pattern-bg opacity-[0.01] group-hover:opacity-[0.04] transition-opacity pointer-events-none"></div>
 
-                  {/* Circle Icon Container */}
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-slate-100 text-slate-600 border-2 border-slate-200 group-hover:bg-slate-800 group-hover:text-white group-hover:border-khmer-gold group-hover:shadow-md group-hover:scale-110">
-                    <Lock className="w-6 h-6" />
+                  <div className="flex flex-col items-center w-full">
+                    {/* Circle Icon Container */}
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-all duration-300 bg-slate-100 text-slate-600 border-2 border-slate-200 group-hover:bg-slate-800 group-hover:text-white group-hover:border-khmer-gold group-hover:shadow-md group-hover:scale-110">
+                      <Lock className="w-6 h-6" />
+                    </div>
+
+                    <span className="font-serif text-sm font-black text-slate-800 group-hover:text-slate-950 leading-tight transition-colors">
+                      អ្នកគ្រប់គ្រង (ADMIN)
+                    </span>
+                    <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
+                      🔑 គ្រប់គ្រងប្រព័ន្ធ
+                    </span>
+                    <p className="text-[9px] sm:text-[10.5px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
+                      សិទ្ធិគ្រប់គ្រងខ្ពស់បំផុត កែសម្រួល អនុម័ត និងលុបចំណងដៃ ឬបង្កើតគណនីម្ចាស់ការ។
+                    </p>
                   </div>
 
-                  <span className="font-serif text-sm font-black text-slate-800 group-hover:text-slate-950 leading-tight transition-colors">
-                    អ្នកគ្រប់គ្រង (ADMIN)
-                  </span>
-                  <span className="text-[10px] text-khmer-gold-dark mt-1 font-bold">
-                    🔑 គ្រប់គ្រងប្រព័ន្ធ
-                  </span>
-                  <p className="text-[9px] sm:text-[10px] text-slate-400 group-hover:text-slate-500 mt-2 font-sans leading-relaxed transition-colors px-1">
-                    សិទ្ធិគ្រប់គ្រងខ្ពស់បំផុត កែសម្រួល អនុម័ត និងលុបចំណងដៃ ឬបង្កើតគណនីម្ចាស់ការ។
-                  </p>
+                  {/* Explicit Action Call Button */}
+                  <div className="w-full mt-4 bg-slate-700 hover:bg-slate-900 text-white rounded-xl py-2 px-4 font-serif text-[11px] font-bold tracking-wider transition-colors shadow-sm group-hover:shadow flex items-center justify-center gap-1">
+                    <span>គ្រប់គ្រងប្រព័ន្ធ</span>
+                    <span>➜</span>
+                  </div>
                 </button>
               </div>
             </div>
