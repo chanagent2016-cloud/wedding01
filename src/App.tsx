@@ -26,8 +26,12 @@ import {
   X,
   Calendar,
   Clock,
-  MapPin
+  MapPin,
+  Bell,
+  BellOff
 } from 'lucide-react';
+import { playChimeSound } from './utils/audio';
+
 
 export default function App() {
   // Application Modes and Role simulation
@@ -51,6 +55,36 @@ export default function App() {
   const [contributions, setContributions] = useState<WeddingContribution[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Optional live audio alert and visual toast notification states
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('wedding_sound_alerts_enabled');
+    return saved === null ? true : saved === 'true';
+  });
+  const [activeToasts, setActiveToasts] = useState<{ id: string; item: WeddingContribution }[]>([]);
+
+  const toggleSound = () => {
+    setSoundEnabled(prev => {
+      const newVal = !prev;
+      localStorage.setItem('wedding_sound_alerts_enabled', String(newVal));
+      return newVal;
+    });
+  };
+
+  const triggerNewContributionToast = (item: WeddingContribution) => {
+    const toastId = String(Date.now()) + Math.random().toString(36).substr(2, 9);
+    setActiveToasts(prev => [...prev, { id: toastId, item }]);
+    
+    if (soundEnabled) {
+      playChimeSound();
+    }
+
+    // Auto dismiss after 6 seconds corresponding to CSS slide-in-out animation
+    setTimeout(() => {
+      setActiveToasts(prev => prev.filter(t => t.id !== toastId));
+    }, 6000);
+  };
+
 
   // Sync state for real/simulated database label in high-level header
   const [isDbReal, setIsDbReal] = useState(false);
@@ -212,7 +246,25 @@ export default function App() {
       try {
         const list = await db.getContributions();
         if (active) {
-          setContributions(list);
+          setContributions(prev => {
+            // Compare previous database records with latest updates to identify newly approved entries
+            if (prev && prev.length > 0) {
+              const newlyApproved = list.filter(item => {
+                if (item.status !== 'approved') return false;
+                const prevItem = prev.find(p => p.id === item.id);
+                // Newly approved: did not exist or was pending/rejected in previous state
+                return !prevItem || prevItem.status !== 'approved';
+              });
+
+              if (newlyApproved.length > 0) {
+                // Trigger live ascending crystal arpeggio sound and gold-themed visual toast modal feedback
+                newlyApproved.forEach(item => {
+                  triggerNewContributionToast(item);
+                });
+              }
+            }
+            return list;
+          });
           setIsDbReal(db.isRealSupabase());
         }
       } catch (err) {
@@ -230,6 +282,21 @@ export default function App() {
       active = false;
     };
   }, [refreshTrigger]);
+
+  // Periodic polling for hosts and admin views for real-time live synchronization
+  useEffect(() => {
+    if (activeTab !== 'host' && activeTab !== 'admin') return;
+
+    // Fast-paced but light-weight polling interval every 8 seconds
+    const pollInterval = setInterval(() => {
+      setRefreshTrigger(prev => prev + 1);
+    }, 8000);
+
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [activeTab]);
+
 
   // Command to trigger refetches from child components
   const triggerRefresh = () => {
@@ -704,7 +771,31 @@ export default function App() {
               </div>
 
               {/* Action buttons list */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center flex-wrap gap-1.5 justify-center">
+                {/* Real-time sound alert toggle switcher */}
+                <button
+                  onClick={toggleSound}
+                  className={`text-[10px] px-2.5 py-1.5 rounded-lg border font-extrabold transition-all flex items-center gap-1 cursor-pointer shadow-sm select-none ${
+                    soundEnabled
+                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-500 border-slate-300'
+                  }`}
+                  id="header-sound-alert-toggle-btn"
+                  title={soundEnabled ? "បិទសំឡេងជូនដំណឹង (Mute sounds)" : "បើកសំឡេងជូនដំណឹង (Enable sounds)"}
+                >
+                  {soundEnabled ? (
+                    <>
+                      <Bell className="w-3 h-3 text-emerald-600 animate-bounce" />
+                      <span>សំឡេង៖ បើក (Sound: On)</span>
+                    </>
+                  ) : (
+                    <>
+                      <BellOff className="w-3 h-3 text-slate-400" />
+                      <span>សំឡេង៖ បិទ (Sound: Off)</span>
+                    </>
+                  )}
+                </button>
+
                 <button
                   onClick={() => setIsRoleChosen(false)}
                   className="text-[10px] bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg border border-amber-500 font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow"
@@ -1132,6 +1223,74 @@ export default function App() {
               </form>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Real-time beautiful gold-themed floating toast cards */}
+      {activeToasts.length > 0 && (
+        <div 
+          className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"
+          id="live-contribution-toasts-portal"
+        >
+          {activeToasts.map(({ id, item }) => (
+            <div
+              key={id}
+              className="bg-[#5C000B] text-white border-2 border-khmer-gold/60 p-4 rounded-2xl luxury-card-shadow-gold relative animate-toast-slide-in pointer-events-auto overflow-hidden font-sans select-none flex items-start gap-3.5"
+            >
+              {/* Gold Khmer Pattern background watermark */}
+              <div className="absolute inset-0 khmer-pattern-bg opacity-[0.06] pointer-events-none"></div>
+              
+              {/* Highlight background gradient flare */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-khmer-gold/15 to-transparent rounded-full blur-xl pointer-events-none"></div>
+              
+              {/* Ribbon line ornament */}
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-khmer-gold via-yellow-200 to-khmer-gold"></div>
+
+              {/* Heart/Gift Ring Graphic */}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-khmer-gold/20 via-[#F5E6B8]/10 to-transparent border border-khmer-gold flex items-center justify-center shrink-0 shadow-inner">
+                <Heart className="w-5 h-5 text-[#F7E6B8] fill-[#F7E6B8] animate-pulse-heart" />
+              </div>
+
+              {/* Toast info blocks */}
+              <div className="flex-1 space-y-1 relative z-10">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-black tracking-widest text-[#F7E6B8] font-serif">
+                    🎉 ចំណងដៃសម្រេចថ្មី (GIFT UPDATED)
+                  </span>
+                  
+                  {/* Close button on toast */}
+                  <button
+                    onClick={() => setActiveToasts(prev => prev.filter(t => t.id !== id))}
+                    className="text-white/60 hover:text-white transition-colors cursor-pointer"
+                    title="Dismiss notification"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                
+                <h4 className="text-sm font-black text-white font-serif">
+                  {item.guest_name}
+                </h4>
+                
+                <p className="text-[10px] text-[#FCF8F2] font-semibold opacity-90">
+                  ត្រូវជា៖ {item.relationship || 'សហការី'}
+                </p>
+
+                {/* Amount segment */}
+                <div className="inline-flex items-center gap-1.5 bg-[#400007] border border-khmer-gold/30 rounded-lg px-2.5 py-1 text-xs font-black text-[#F7E6B8] font-sans mt-1">
+                  <span>{item.currency === 'USD' ? '$' : '៛'}</span>
+                  <span>{item.amount?.toLocaleString()}</span>
+                  <span className="text-[9px] text-[#FCF8F2]/70 font-bold font-sans">({item.payment_method === 'bank' ? '🏦 Bank' : '📥 Cash'})</span>
+                </div>
+
+                {item.blessing && (
+                  <p className="text-[10.5px] italic text-rose-100/90 leading-relaxed font-sans line-clamp-2 pt-1 border-t border-rose-950/40">
+                    "{item.blessing}"
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

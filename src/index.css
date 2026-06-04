@@ -143,4 +143,32 @@ body {
   box-shadow: 0 12px 40px -12px rgba(194, 145, 36, 0.25), 0 2px 8px rgba(194, 145, 36, 0.1);
 }
 
+@keyframes toast-slide-in {
+  0% {
+    transform: translateX(120%) scale(0.9);
+    opacity: 0;
+  }
+  8% {
+    transform: translateX(0) scale(1.02);
+    opacity: 1;
+  }
+  12% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  92% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(130%);
+    opacity: 0;
+  }
+}
+
+.animate-toast-slide-in {
+  animation: toast-slide-in 6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
 
