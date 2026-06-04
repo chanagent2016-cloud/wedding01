@@ -273,10 +273,17 @@ async function syncLocalDataToSupabase() {
           .from('wedding_contributions')
           .insert([insertPayload]);
         
-        // Dynamic fallback if missing newly added columns
-        if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.message?.includes('attendance_type') || insertErr.message?.includes('guest_count') || insertErr.message?.includes('screenshot_url') || insertErr.code === '42703')) {
-          console.warn(`Sync Warning: Supabase table is missing advanced columns. Retrying fallback insert for ${guestNameClean} using metadata encoding.`);
-          const fallbackPayload = { ...insertPayload };
+        // Dynamic fallback if missing newly added columns or any error
+        if (insertErr) {
+          console.warn(`Sync Warning: Supabase table insert failed. Retrying fallback insert for ${guestNameClean} using metadata encoding.`);
+          const fallbackPayload = {
+            guest_name: insertPayload.guest_name,
+            relationship: insertPayload.relationship,
+            amount: insertPayload.amount,
+            currency: insertPayload.currency,
+            status: insertPayload.status,
+          } as any;
+
           const meta = {
             payment_method: localItem.payment_method,
             attendance_type: localItem.attendance_type,
@@ -285,10 +292,6 @@ async function syncLocalDataToSupabase() {
           };
           fallbackPayload.blessing = `${localItem.blessing || ''}\n<!--METADATA:${JSON.stringify(meta)}-->`;
 
-          delete fallbackPayload.payment_method;
-          delete fallbackPayload.attendance_type;
-          delete fallbackPayload.guest_count;
-          delete fallbackPayload.screenshot_url;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .insert([fallbackPayload]);
@@ -475,10 +478,18 @@ export const db = {
           .insert([insertPayload])
           .select();
         
-        // Resilience: fallback retry insert if database doesn't have the payment_method, attendance_type or guest_count columns
-        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.message?.includes('screenshot_url') || error.code === '42703')) {
-          console.warn("Supabase insert warning: Missing columns. Retrying insert with fallback metadata encoding.");
-          const fallbackPayload = { ...insertPayload };
+        // Resilience fallback: if the first insert failed for any reason (e.g., missing columns),
+        // we retry with only the core standard columns and status, encoding the rest in blessing metadata!
+        if (error) {
+          console.warn("Supabase insert warning: Retrying insert with fallback metadata encoding.", error);
+          const fallbackPayload = {
+            guest_name: insertPayload.guest_name,
+            relationship: insertPayload.relationship,
+            amount: insertPayload.amount,
+            currency: insertPayload.currency,
+            status: insertPayload.status,
+          } as any;
+
           const meta = {
             payment_method: newItem.payment_method,
             attendance_type: newItem.attendance_type,
@@ -487,10 +498,6 @@ export const db = {
           };
           fallbackPayload.blessing = `${newItem.blessing}\n<!--METADATA:${JSON.stringify(meta)}-->`;
 
-          delete fallbackPayload.payment_method;
-          delete fallbackPayload.attendance_type;
-          delete fallbackPayload.guest_count;
-          delete fallbackPayload.screenshot_url;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .insert([fallbackPayload])
@@ -566,10 +573,17 @@ export const db = {
           .update(updates)
           .eq('id', id);
         
-        // Resilience: Fallback if Supabase database lacks new columns
-        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.message?.includes('screenshot_url') || error.code === '42703')) {
-          console.warn("Supabase update failed due to missing columns. Retrying update with fallback metadata encoding.");
-          const safeUpdates = { ...updates };
+        // Resilience fallback: if the first update failed for any reason (e.g., missing columns),
+        // we retry with only the core standard columns and encode the rest in blessing metadata!
+        if (error) {
+          console.warn("Supabase update failed, retrying with fallback metadata encoding:", error);
+          const safeUpdates = {
+            guest_name: updates.guest_name,
+            relationship: updates.relationship,
+            amount: updates.amount,
+            currency: updates.currency,
+          } as any;
+
           const meta = {
             payment_method: updates.payment_method,
             attendance_type: updates.attendance_type,
@@ -578,10 +592,6 @@ export const db = {
           };
           safeUpdates.blessing = `${updates.blessing || ''}\n<!--METADATA:${JSON.stringify(meta)}-->`;
 
-          delete safeUpdates.payment_method;
-          delete safeUpdates.attendance_type;
-          delete safeUpdates.guest_count;
-          delete safeUpdates.screenshot_url;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .update(safeUpdates)
