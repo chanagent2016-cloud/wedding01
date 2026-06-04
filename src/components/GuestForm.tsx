@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { db } from '../database';
-import { Gift, Heart, User, Sparkles, CheckCircle, ChevronRight, HelpCircle } from 'lucide-react';
+import { Gift, Heart, User, Sparkles, CheckCircle, ChevronRight, HelpCircle, Upload, Image } from 'lucide-react';
 import { WeddingContribution } from '../types';
 
 interface GuestFormProps {
@@ -46,6 +46,11 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
   const [guestCount, setGuestCount] = useState<number>(1);
   const [blessing, setBlessing] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Bank screenshot transfer verification states
+  const [screenshotBase64, setScreenshotBase64] = useState<string>('');
+  const [dragActive, setDragActive] = useState<boolean>(false);
+
   const [submittedData, setSubmittedData] = useState<{
     name: string;
     amount: number;
@@ -54,6 +59,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
     payment_method?: 'cash' | 'bank';
     attendance_type?: 'in_person' | 'remote';
     guest_count?: number;
+    screenshot_url?: string;
   } | null>(null);
 
   // Validation state
@@ -83,6 +89,12 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
       return;
     }
 
+    // Require transfer screenshot for bank payments
+    if (paymentMethod === 'bank' && !screenshotBase64) {
+      setValidationError('សូមបង្ហោះរូបភាពបញ្ជាក់ការវេលុយ (Screenshot ផ្ទេរប្រាក់) ដើម្បីឱ្យគណៈកម្មការពិនិត្យ និងអនុម័ត! (Please upload transfer screenshot!)');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -94,7 +106,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
         blessing: blessing.trim() || 'សូមជូនពរឱ្យកូនកំលោះកូនក្រមុំមានសុភមង្គល!',
         payment_method: paymentMethod,
         attendance_type: attendanceType,
-        guest_count: attendanceType === 'in_person' ? guestCount : 0
+        guest_count: attendanceType === 'in_person' ? guestCount : 0,
+        screenshot_url: paymentMethod === 'bank' ? screenshotBase64 : undefined
       });
 
       setSubmittedData({
@@ -104,7 +117,8 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
         blessing: savedItem.blessing,
         payment_method: savedItem.payment_method,
         attendance_type: savedItem.attendance_type,
-        guest_count: savedItem.guest_count
+        guest_count: savedItem.guest_count,
+        screenshot_url: savedItem.screenshot_url
       });
 
       // Clear form
@@ -116,6 +130,7 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
       setPaymentMethod('cash');
       setAttendanceType('in_person');
       setGuestCount(1);
+      setScreenshotBase64('');
 
       onContributionSubmitted();
     } catch (err) {
@@ -186,6 +201,19 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
                   : '✉️ ចងដៃពីចម្ងាយ (Remote)'}
               </span>
             </div>
+            {submittedData.screenshot_url && (
+              <div className="border-b border-dashed border-gray-200 pb-2 text-xs space-y-1.5">
+                <span className="text-gray-500 font-medium">រូបភាពលិខិតផ្ទេរប្រាក់ (Transfer Screenshot):</span>
+                <div className="flex justify-center bg-slate-50 p-1.5 rounded-lg border border-dashed border-slate-200">
+                  <img 
+                    src={submittedData.screenshot_url} 
+                    alt="Receipt Screenshot verification" 
+                    className="max-h-40 rounded object-contain shadow-sm"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              </div>
+            )}
             <div className="pb-1 text-gray-500">ពាក្យជូនពរ (Blessing):</div>
             <div className="bg-khmer-cream p-3 rounded text-xs italic text-slate-700 leading-relaxed border-l-2 border-khmer-gold/60">
               "{submittedData.blessing}"
@@ -414,6 +442,140 @@ export function GuestForm({ onContributionSubmitted, contributions = [], isLoadi
             </button>
           </div>
         </div>
+
+        {/* Bank QR Code and File Upload section if payment method is bank */}
+        {paymentMethod === 'bank' && (
+          <div className="p-4 bg-amber-50/20 rounded-xl border border-khmer-gold/30 space-y-4 animate-slide-down shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+              {/* QR Code Scan frame */}
+              <div className="bg-white border border-khmer-gold/25 p-4 rounded-xl text-center flex flex-col items-center justify-center space-y-3.5">
+                <span className="text-[10px] font-black text-khmer-gold-dark uppercase tracking-wider font-serif">
+                  ស្កែនដើម្បីចងដៃ | KHQR Bank Transfer
+                </span>
+                
+                {/* Visual QR Code Image (Full Vertical Aspect Ratio) */}
+                <div className="relative group w-52 sm:w-56 border border-slate-200/80 p-1.5 rounded-xl bg-slate-50 flex items-center justify-center overflow-hidden shadow-sm">
+                  <img 
+                    src="/wedding_qr_code.jpg" 
+                    alt="KHQR Scan to contribute" 
+                    className="w-full h-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-[1.02]"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+
+                {/* Direct Link to ABA Transfer */}
+                <div className="w-full px-1">
+                  <a 
+                    href="https://pay.ababank.com/oRF8/co96xp7s"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 w-full bg-[#005A9C] hover:bg-[#004B82] text-white text-[11px] font-bold py-2 px-3 rounded-lg shadow-sm hover:shadow transition-all duration-300 transform hover:scale-[1.01] cursor-pointer"
+                  >
+                    <span className="animate-bounce">👉</span>
+                    <span>ចុចទីនេះដើម្បីផ្ទេរប្រាក់ផ្ទាល់ (Tap to Pay)</span>
+                  </a>
+                </div>
+
+                <div className="text-center space-y-0.5">
+                  <span className="text-[10px] font-bold text-khmer-red-dark uppercase tracking-wider block">គណនីធនាគារ (Recipient Account)</span>
+                  <p className="text-xs font-black text-slate-800 font-sans col-span-2">
+                    ទូច ចាន់ដារ៉ាហៀង (Touch Chandaraheang)
+                  </p>
+                  <p className="text-[11px] font-mono font-bold text-slate-500 bg-slate-50 border border-slate-100 rounded px-2 py-0.5 inline-block">
+                    ABA: 000 248 201
+                  </p>
+                </div>
+              </div>
+
+              {/* Drag and Drop Screenshot Uploader */}
+              <div className="flex flex-col space-y-2.5">
+                <label className="text-xs font-bold text-khmer-red-dark block">
+                  បង្ហោះរូបភាពបញ្ជាក់ការវេលុយ (Upload Screenshot) <span className="text-red-500">*</span>
+                </label>
+
+                {screenshotBase64 ? (
+                  /* Image Preview Mode */
+                  <div className="bg-white border border-emerald-200 p-2.5 rounded-lg flex flex-col items-center justify-center text-center space-y-2">
+                    <div className="relative group max-w-[150px] max-h-[150px] rounded border border-slate-200 overflow-hidden shadow-sm">
+                      <img 
+                        src={screenshotBase64} 
+                        alt="Screenshot Preview" 
+                        className="object-contain max-h-32 max-w-full"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-semibold font-sans">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" /> បង្ហោះទទួលបានជោគជ័យ!
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setScreenshotBase64('')}
+                      className="text-[10px] uppercase tracking-wider font-bold text-rose-500 hover:text-rose-700 underline transition cursor-pointer"
+                    >
+                      លុបចេញ និងបង្ហោះរូបថ្មី (Remove & Reupload)
+                    </button>
+                  </div>
+                ) : (
+                  /* Interactive Drag & Drop Area */
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragActive(true);
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault();
+                      setDragActive(false);
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragActive(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setScreenshotBase64(reader.result as string);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    onClick={() => {
+                      document.getElementById('receipt-screenshot-file-picker')?.click();
+                    }}
+                    className={`border-2 border-dashed rounded-lg p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 ${
+                      dragActive 
+                        ? 'border-khmer-gold bg-amber-50/40 scale-[1.01]' 
+                        : 'border-slate-300 bg-white hover:border-khmer-gold/60 hover:bg-slate-50/50'
+                    }`}
+                  >
+                    <input 
+                      id="receipt-screenshot-file-picker"
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setScreenshotBase64(reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <Upload className={`w-8 h-8 text-slate-400 group-hover:text-khmer-gold mb-2.5 transition ${dragActive ? 'text-khmer-gold scale-110 animate-bounce' : ''}`} />
+                    <span className="text-xs font-bold text-slate-700">ចុចទីនេះ ឬ អូសរូបបង្ហោះនៅទីនេះ (Click or Drag & Drop)</span>
+                    <span className="text-[10px] text-slate-400 font-sans font-medium mt-1">គាំទ្រប្រភេទរូបភាព (PNG, JPG, Screen CAP)</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <p className="text-[10.5px] text-amber-800 bg-amber-50/50 rounded-lg p-2 leading-relaxed font-semibold font-sans">
+              💡 <strong>ណែនាំ៖</strong> បន្ទាប់ពីលោកអ្នកបានធ្វើការផ្ទេរប្រាក់ (វេលុយចងដៃ) ជោគជ័យតាមទូរស័ព្ទដៃហើយ សូមថតរូបវិក្កយបត្រ (Screenshot) រួចបង្ហោះវាក្នុងប្រអប់ខាងលើ ដើម្បីឱ្យគណៈកម្មការពិនិត្យផ្ទៀងផ្ទាត់ និងធ្វើការអនុម័តពាក្យជូនពររបស់លោកអ្នកជាផ្លូវការនៅក្នុងសៀវភៅមាស។
+            </p>
+          </div>
+        )}
 
         {/* Attendance Option segment */}
         <div className="space-y-1.5 border border-khmer-gold/15 bg-khmer-cream/20 p-4 rounded-xl">

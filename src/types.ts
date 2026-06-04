@@ -15,6 +15,7 @@ export interface WeddingContribution {
   payment_method?: 'cash' | 'bank';
   attendance_type?: 'in_person' | 'remote';
   guest_count?: number;
+  screenshot_url?: string;
 }
 
 export type UserRole = 'admin' | 'host' | 'user';

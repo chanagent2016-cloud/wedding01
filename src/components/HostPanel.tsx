@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { WeddingContribution } from '../types';
-import { Heart, Search, Sparkles, AlertCircle, Users, DollarSign, Coins } from 'lucide-react';
+import { Heart, Search, Sparkles, AlertCircle, Users, DollarSign, Coins, FileSpreadsheet } from 'lucide-react';
+import { exportContributionsToCSV } from '../utils/export';
 
 interface HostPanelProps {
   contributions: WeddingContribution[];
@@ -216,6 +217,18 @@ export function HostPanel({ contributions, isLoading, loggedInHost, onLogout }: 
             <option value="bank">🏦 ប្រាក់តាមធនាគារ (Bank Transfer)</option>
           </select>
         </div>
+
+        {/* Excel Export Button */}
+        <button
+          id="export-to-excel-host-btn"
+          type="button"
+          onClick={() => exportContributionsToCSV(filteredList, 'wedding_ledger_host')}
+          className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-sm hover:shadow transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+          title="Export filtered list to Excel format"
+        >
+          <FileSpreadsheet className="w-4 h-4 shrink-0" />
+          <span>ទាញយក Excel (Export)</span>
+        </button>
       </div>
 
       {/* Scrollable Golden Guest Registry Grid */}

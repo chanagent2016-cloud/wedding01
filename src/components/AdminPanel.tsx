@@ -21,8 +21,10 @@ import {
   Clock, 
   CheckSquare, 
   Clipboard, 
-  UserPlus
+  UserPlus,
+  FileSpreadsheet
 } from 'lucide-react';
+import { exportContributionsToCSV } from '../utils/export';
 
 const USD_PRESETS = [25, 30, 40, 50, 70, 100];
 const KHR_PRESETS = [120000, 150000, 200000, 300000, 400000, 500000];
@@ -37,6 +39,7 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [relationFilter, setRelationFilter] = useState('');
+  const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(null);
 
   // Sub-tabs for Admin Console (Ledger vs. Host Accounts)
   const [adminSubTab, setAdminSubTab] = useState<'ledger' | 'hosts'>('ledger');
@@ -680,10 +683,10 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
       )}
 
       {/* Advanced search, status filter tabs, and relations options filter */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3.5">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3.5 font-sans">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
           {/* Inner Search input */}
-          <div className="md:col-span-5 relative">
+          <div className="md:col-span-4 relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               id="admin-search-input"
@@ -710,21 +713,32 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
             </select>
           </div>
 
-          {/* Toggle manual record add button */}
-          <div className="md:col-span-3 flex justify-end">
+          {/* Buttons: Export to Excel & Manual record add */}
+          <div className="md:col-span-4 flex gap-2 justify-end">
+            <button
+              id="export-to-excel-admin-btn"
+              type="button"
+              onClick={() => exportContributionsToCSV(filteredList, 'wedding_ledger_admin')}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-2 rounded shadow transition flex items-center justify-center gap-1.5 cursor-pointer"
+              title="Export filtered list to Excel format"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 shrink-0" />
+              <span>ទាញយក Excel (Export)</span>
+            </button>
+            
             <button
               id="toggle-manual-add-form-btn"
               type="button"
               onClick={() => setShowAddForm(!showAddForm)}
-              className="w-full bg-khmer-red hover:bg-khmer-red-light text-white text-xs font-bold px-3 py-2 rounded shadow transition flex items-center justify-center gap-1.5"
+              className="flex-1 bg-khmer-red hover:bg-khmer-red-light text-white text-[11px] font-bold px-3 py-2 rounded shadow transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {showAddForm ? (
                 <>
-                  <X className="w-3.5 h-3.5" /> លាក់ផ្ទាំងកត់ចំណងដៃ (Cancel)
+                  <X className="w-3.5 h-3.5 shrink-0" /> <span>លាក់ (Cancel)</span>
                 </>
               ) : (
                 <>
-                  <UserPlus className="w-3.5 h-3.5" /> កត់ Envelope ដោយដៃ (Manual Entry)
+                  <UserPlus className="w-3.5 h-3.5 shrink-0" /> <span>កត់ដោយដៃ (Add Cash)</span>
                 </>
               )}
             </button>
@@ -868,13 +882,33 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
 
                       {/* Payment Method Column */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                          item.payment_method === 'bank' 
-                            ? 'bg-blue-50 text-blue-700 border-blue-200' 
-                            : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
-                        }`}>
-                          {item.payment_method === 'bank' ? '🏦 ធនាគារ (Bank)' : '💼 ក្នុងហឹប (Cash)'}
-                        </span>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                            item.payment_method === 'bank' 
+                              ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                              : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
+                          }`}>
+                            {item.payment_method === 'bank' ? '🏦 ធនាគារ (Bank)' : '💼 ក្នុងហឹប (Cash)'}
+                          </span>
+                          {item.payment_method === 'bank' && item.screenshot_url && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedScreenshot(item.screenshot_url)}
+                              className="group mt-1 relative flex items-center gap-1 text-[9px] font-bold text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                              title="ចុចដើម្បីមើលវិក្កយបត្រពេញ (Click to view full screenshot)"
+                            >
+                              <div className="w-8 h-8 rounded border border-blue-100 overflow-hidden bg-slate-50 shadow-sm group-hover:border-blue-300 group-hover:scale-105 active:scale-95 transition">
+                                <img 
+                                  src={item.screenshot_url} 
+                                  alt="Screenshot receipt" 
+                                  className="w-full h-full object-cover"
+                                  referrerPolicy="no-referrer"
+                                />
+                              </div>
+                              <span className="underline group-hover:no-underline">វិក្កយបត្រ (Receipt)</span>
+                            </button>
+                          )}
+                        </div>
                       </td>
 
                       {/* Attendance Column */}
@@ -1054,13 +1088,24 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">វិធីសាស្ត្រប្រគល់</span>
-                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1 py-0.5 rounded border mt-0.5 ${
-                        item.payment_method === 'bank' 
-                          ? 'bg-blue-50 text-blue-700 border-blue-200' 
-                          : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
-                      }`}>
-                        {item.payment_method === 'bank' ? '🏦 ធនាគារ' : '💼 ក្នុងហឹប'}
-                      </span>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1 py-0.5 rounded border mt-0.5 ${
+                          item.payment_method === 'bank' 
+                            ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                            : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
+                        }`}>
+                          {item.payment_method === 'bank' ? '🏦 ធនាគារ' : '💼 ក្នុងហឹប'}
+                        </span>
+                        {item.payment_method === 'bank' && item.screenshot_url && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedScreenshot(item.screenshot_url)}
+                            className="flex items-center gap-1 mt-1 text-[9px] font-bold text-blue-600 underline cursor-pointer"
+                          >
+                            <span>មើលវិក្កយបត្រ (View Receipt)</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[9px] uppercase font-bold">វត្តមាន</span>
@@ -1510,6 +1555,45 @@ export function AdminPanel({ contributions, isLoading, onRefresh }: AdminPanelPr
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Zoom Screenshot Viewer Modal */}
+      {selectedScreenshot && (
+        <div 
+          onClick={() => setSelectedScreenshot(null)}
+          className="fixed inset-0 z-50 bg-slate-900/85 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in cursor-zoom-out"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-lg w-full max-h-[90vh] flex flex-col relative animate-scale-up"
+          >
+            <div className="p-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5 font-sans">
+                🏦 វិក្កយបត្រផ្ទេរប្រាក់ចងដៃ (SNEH Transfer Receipt Verification)
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedScreenshot(null)}
+                className="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] uppercase font-bold py-1 px-2.5 rounded cursor-pointer transition font-sans"
+              >
+                បិទ (Close)
+              </button>
+            </div>
+            
+            <div className="flex-1 bg-slate-100/40 p-4 overflow-auto flex items-center justify-center min-h-[300px]">
+              <img 
+                src={selectedScreenshot} 
+                alt="Full receipt screenshot verification" 
+                className="max-h-[65vh] max-w-full rounded-lg object-contain shadow"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            
+            <div className="p-3 bg-blue-50 text-[10.5px] text-blue-800 text-center font-medium font-sans">
+              សូមផ្ទៀងផ្ទាត់ឈ្មោះ និងគណនីវេលុយចងដៃឱ្យបានត្រឹមត្រូវ មុននឹងអនុម័ត (Approve)។
+            </div>
           </div>
         </div>
       )}

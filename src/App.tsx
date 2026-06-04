@@ -23,7 +23,10 @@ import {
   CornerDownRight,
   Bookmark,
   Lock,
-  X
+  X,
+  Calendar,
+  Clock,
+  MapPin
 } from 'lucide-react';
 
 export default function App() {
@@ -83,6 +86,48 @@ export default function App() {
   const [hostLoginUser, setHostLoginUser] = useState('');
   const [hostLoginPass, setHostLoginPass] = useState('');
   const [hostLoginError, setHostLoginError] = useState('');
+
+  // Countdown Timer State
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isOver: false
+  });
+
+  useEffect(() => {
+    const targetDate = new Date('2026-12-11T17:00:00+07:00'); // Dec 11, 2026 5:00 PM ICT (Cambodia Time)
+    
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
+      
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isOver: true });
+        return;
+      }
+      
+      const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((difference % (1000 * 60)) / 1000);
+      
+      setTimeLeft({ days: d, hours: h, minutes: m, seconds: s, isOver: false });
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const toKhmerDigits = (num: number | string) => {
+    const khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+    return String(num).split('').map(char => {
+      const digit = parseInt(char, 10);
+      return isNaN(digit) ? char : khmerDigits[digit];
+    }).join('');
+  };
 
   // Persist role, tab, and host states to survive page refresh
   useEffect(() => {
@@ -294,7 +339,7 @@ export default function App() {
               <img 
                 src="/snehlogo.png" 
                 alt="SNE WEDDING & CEREMONY" 
-                className="h-28 sm:h-36 w-auto object-contain transition-transform duration-500 hover:scale-105 drop-shadow-md relative z-10"
+                className="h-28 sm:h-36 w-auto object-contain drop-shadow-md relative z-10 animate-logo-luxury"
                 referrerPolicy="no-referrer"
                 id="wedding-brand-logo"
               />
@@ -331,6 +376,9 @@ export default function App() {
                   <span className="text-sm sm:text-base font-black text-khmer-red-dark mt-1 font-serif group-hover/couple-box:text-khmer-red transition-all">
                     ទូច ចាន់ដារ៉ាហៀង
                   </span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 font-sans">
+                    TOUCH CHANDARAHEANG
+                  </span>
                 </div>
 
                 {/* Animated Central Heart Container */}
@@ -349,11 +397,130 @@ export default function App() {
                   <span className="text-sm sm:text-base font-black text-khmer-red-dark mt-1 font-serif group-hover/couple-box:text-khmer-red transition-all">
                     ប៉េន ស្រីមុំ
                   </span>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 font-sans">
+                    PEN SREYMOM
+                  </span>
                 </div>
 
               </div>
+
+              {/* Dynamic Wedding Countdown Timer */}
+              <div className="w-full mt-4 p-4 bg-gradient-to-r from-rose-50/50 via-[#FFFDF9] to-rose-50/50 border border-khmer-gold/30 rounded-2xl text-center space-y-2.5 shadow-sm font-sans">
+                <span className="text-[10px] font-black text-khmer-gold-dark uppercase tracking-widest font-serif flex items-center justify-center gap-1.5 animate-pulse">
+                  ✨ រាប់ថយក្រោយឆ្ពោះទៅថ្ងៃមង្គលការ (Days Remaining) ✨
+                </span>
+                
+                {timeLeft.isOver ? (
+                  <div className="text-xs sm:text-sm font-black text-emerald-600 font-serif animate-pulse py-1">
+                    🎉 ថ្ងៃមង្គលការដ៏ឧត្ដុង្គឧត្ដមបានមកដល់ហើយ! (The Big Day is Here!) 🎉
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 sm:gap-3.5 py-1">
+                    {/* Days Column */}
+                    <div className="flex flex-col items-center bg-white border border-rose-100 p-2 rounded-xl min-w-[55px] sm:min-w-[65px] shadow-sm">
+                      <span className="text-lg sm:text-2xl font-black text-khmer-red-dark leading-none">
+                        {timeLeft.days}
+                      </span>
+                      <span className="text-[9px] font-bold text-khmer-gold-dark mt-0.5">
+                        {toKhmerDigits(timeLeft.days)} ថ្ងៃ
+                      </span>
+                      <span className="text-[8px] text-slate-400 font-semibold uppercase tracking-wider font-mono">Days</span>
+                    </div>
+
+                    <span className="text-khmer-gold font-bold text-lg select-none">:</span>
+
+                    {/* Hours Column */}
+                    <div className="flex flex-col items-center bg-white border border-rose-100 p-2 rounded-xl min-w-[55px] sm:min-w-[65px] shadow-sm">
+                      <span className="text-lg sm:text-2xl font-black text-khmer-red-dark leading-none">
+                        {String(timeLeft.hours).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] font-bold text-khmer-gold-dark mt-0.5">
+                        {toKhmerDigits(String(timeLeft.hours).padStart(2, '0'))} ម៉ោង
+                      </span>
+                      <span className="text-[8px] text-slate-400 font-semibold uppercase tracking-wider font-mono">Hours</span>
+                    </div>
+
+                    <span className="text-khmer-gold font-bold text-lg select-none">:</span>
+
+                    {/* Minutes Column */}
+                    <div className="flex flex-col items-center bg-white border border-rose-100 p-2 rounded-xl min-w-[55px] sm:min-w-[65px] shadow-sm">
+                      <span className="text-lg sm:text-2xl font-black text-khmer-red-dark leading-none">
+                        {String(timeLeft.minutes).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] font-bold text-khmer-gold-dark mt-0.5">
+                        {toKhmerDigits(String(timeLeft.minutes).padStart(2, '0'))} នាទី
+                      </span>
+                      <span className="text-[8px] text-slate-400 font-semibold uppercase tracking-wider font-mono">Min</span>
+                    </div>
+
+                    <span className="text-khmer-gold font-bold text-lg select-none">:</span>
+
+                    {/* Seconds Column */}
+                    <div className="flex flex-col items-center bg-white border border-rose-100 p-2 rounded-xl min-w-[55px] sm:min-w-[65px] shadow-sm">
+                      <span className="text-lg sm:text-2xl font-black text-khmer-red leading-none animate-pulse">
+                        {String(timeLeft.seconds).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] font-bold text-khmer-gold-dark mt-0.5">
+                        {toKhmerDigits(String(timeLeft.seconds).padStart(2, '0'))} វិនាទី
+                      </span>
+                      <span className="text-[8px] text-slate-400 font-semibold uppercase tracking-wider font-mono">Sec</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Event Timing and Location Map block */}
+              <div className="w-full mt-4 p-4 bg-[#FDF9F3] border border-khmer-gold/25 rounded-2xl text-left space-y-3 shadow-inner">
+                <div className="flex flex-col sm:flex-row gap-3 divide-y sm:divide-y-0 sm:divide-x divide-khmer-gold/20 font-sans">
+                  
+                  {/* Date & Time Segment */}
+                  <div className="flex-1 flex items-start gap-2.5 pb-2.5 sm:pb-0 sm:pr-3">
+                    <div className="w-8 h-8 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-khmer-red shrink-0 animate-pulse">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-bold text-khmer-gold-dark uppercase tracking-wider block">ពេលវេលាចាប់ផ្ដើម (Event Timing)</span>
+                      <span className="text-xs font-black text-khmer-red-dark block leading-tight">
+                        ម៉ោង ៥:០០ ល្ងាច ថ្ងៃទី ១១ ខែធ្នូ ឆ្នាំ២០២៦
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium block">
+                        Starts 5:00 PM - Friday, December 11, 2026
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Location Address Segment */}
+                  <div className="flex-1 flex items-start gap-2.5 pt-2.5 sm:pt-0 sm:pl-3">
+                    <div className="w-8 h-8 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-khmer-red shrink-0">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-bold text-khmer-gold-dark uppercase tracking-wider block">ទីតាំងប្រារព្ធពិធី (Wedding Location)</span>
+                      <span className="text-xs font-extrabold text-slate-800 block leading-relaxed">
+                        គេហដ្ឋានខាងកូនក្រមុំ នៅភូមិអណ្ដូងតាអ៊ុង ឃុំព្រែកក្របៅ ស្រុកកងមាស ខេត្តកំពង់ចាម
+                      </span>
+                      <p className="text-[10px] text-slate-400 font-medium">
+                        At Bride's House in Andoung Ta Oung, Kang Meas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Google Maps link CTA */}
+                <div className="pt-2 border-t border-dashed border-khmer-gold/15 flex justify-center">
+                  <a 
+                    href="https://maps.app.goo.gl/s6ddTYd3UuYS8Bo97" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-khmer-red hover:bg-khmer-red-light text-white text-[11px] font-bold px-4 py-1.5 rounded-full shadow-sm hover:shadow transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>🔗 មើលផែនទីបង្ហាញទីតាំង (View Google Maps)</span>
+                  </a>
+                </div>
+              </div>
               
-              <div className="mt-2.5 flex items-center gap-2 max-w-md">
+              <div className="mt-4 flex items-center gap-2 max-w-md">
                 <span className="text-khmer-gold text-lg select-none">✦</span>
                 <p className="text-[11px] sm:text-[11.5px] text-slate-700 leading-relaxed font-semibold font-sans">
                   សូមគោរពអញ្ជើញ ឯកឧត្តម លោកជំទាវ លោកប្រុស លោកស្រី ជ្រើសរើសតួនាទីខាងក្រោម ដើម្បីចូលរួមប្រសិទ្ធពរជ័យ កត់ចំណងដៃ និងអបអរសាទរថ្ងៃមង្គលការ។
@@ -519,7 +686,7 @@ export default function App() {
                 <img 
                   src="/snehlogo.png" 
                   alt="SNE Logo" 
-                  className="h-8 w-auto object-contain"
+                  className="h-8 w-auto object-contain animate-logo-pulse-slow"
                   referrerPolicy="no-referrer"
                 />
                 <div className="text-left">

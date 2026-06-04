@@ -16,7 +16,7 @@ const DEFAULT_HOSTS: HostAccount[] = [
     id: 'default-host-1',
     username: 'hieng',
     password_hash: '123',
-    fullname: 'កូនកំលោះ ទូច ចាន់ដារ៉ាហៀង (Touch Chandarahieng)',
+    fullname: 'កូនកំលោះ ទូច ចាន់ដារ៉ាហៀង (Touch Chandaraheang)',
     created_at: new Date().toISOString()
   },
   {
@@ -30,7 +30,7 @@ const DEFAULT_HOSTS: HostAccount[] = [
     id: 'default-host-3',
     username: 'heang',
     password_hash: '619966',
-    fullname: 'ម្ចាស់ដើមការ ទូច ចាន់ដារ៉ាហៀង (Touch Chandarahieng)',
+    fullname: 'ម្ចាស់ដើមការ ទូច ចាន់ដារ៉ាហៀង (Touch Chandaraheang)',
     created_at: new Date().toISOString()
   }
 ];
@@ -50,7 +50,7 @@ function getLocalHosts(): HostAccount[] {
         id: 'default-host-3',
         username: 'heang',
         password_hash: '619966',
-        fullname: 'ម្ចាស់ដើមការ ទូច ចាន់ដារ៉ាហៀង (Touch Chandarahieng)',
+        fullname: 'ម្ចាស់ដើមការ ទូច ចាន់ដារ៉ាហៀង (Touch Chandaraheang)',
         created_at: new Date().toISOString()
       });
       localStorage.setItem(HOST_DB_KEY, JSON.stringify(list));
@@ -265,7 +265,8 @@ async function syncLocalDataToSupabase() {
           status: localItem.status,
           payment_method: localItem.payment_method || 'cash',
           attendance_type: localItem.attendance_type || 'remote',
-          guest_count: localItem.guest_count !== undefined ? Number(localItem.guest_count) : 0
+          guest_count: localItem.guest_count !== undefined ? Number(localItem.guest_count) : 0,
+          screenshot_url: localItem.screenshot_url
         };
 
         let { error: insertErr } = await supabaseClient
@@ -273,12 +274,13 @@ async function syncLocalDataToSupabase() {
           .insert([insertPayload]);
         
         // Dynamic fallback if missing newly added columns
-        if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.message?.includes('attendance_type') || insertErr.message?.includes('guest_count') || insertErr.code === '42703')) {
+        if (insertErr && (insertErr.message?.includes('payment_method') || insertErr.message?.includes('attendance_type') || insertErr.message?.includes('guest_count') || insertErr.message?.includes('screenshot_url') || insertErr.code === '42703')) {
           console.warn(`Sync Warning: Supabase table is missing advanced columns. Retrying fallback insert for ${guestNameClean}.`);
           const fallbackPayload = { ...insertPayload };
           delete fallbackPayload.payment_method;
           delete fallbackPayload.attendance_type;
           delete fallbackPayload.guest_count;
+          delete fallbackPayload.screenshot_url;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .insert([fallbackPayload]);
@@ -376,6 +378,7 @@ export const db = {
     payment_method?: 'cash' | 'bank';
     attendance_type?: 'in_person' | 'remote';
     guest_count?: number;
+    screenshot_url?: string;
   }): Promise<WeddingContribution> {
     const newItem: WeddingContribution = {
       id: supabaseClient ? '' : 'local-' + Math.random().toString(36).substr(2, 9),
@@ -388,7 +391,8 @@ export const db = {
       created_at: new Date().toISOString(),
       payment_method: item.payment_method || 'cash',
       attendance_type: item.attendance_type || 'remote',
-      guest_count: item.guest_count !== undefined ? Number(item.guest_count) : 0
+      guest_count: item.guest_count !== undefined ? Number(item.guest_count) : 0,
+      screenshot_url: item.screenshot_url
     };
 
     if (supabaseClient) {
@@ -402,7 +406,8 @@ export const db = {
           status: newItem.status,
           payment_method: newItem.payment_method,
           attendance_type: newItem.attendance_type,
-          guest_count: newItem.guest_count
+          guest_count: newItem.guest_count,
+          screenshot_url: newItem.screenshot_url
         };
         let { data, error } = await supabaseClient
           .from('wedding_contributions')
@@ -410,12 +415,13 @@ export const db = {
           .select();
         
         // Resilience: fallback retry insert if database doesn't have the payment_method, attendance_type or guest_count columns
-        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.code === '42703')) {
+        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.message?.includes('screenshot_url') || error.code === '42703')) {
           console.warn("Supabase insert warning: Missing columns. Retrying insert with fallback layout.");
           const fallbackPayload = { ...insertPayload };
           delete fallbackPayload.payment_method;
           delete fallbackPayload.attendance_type;
           delete fallbackPayload.guest_count;
+          delete fallbackPayload.screenshot_url;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .insert([fallbackPayload])
@@ -482,6 +488,7 @@ export const db = {
     payment_method?: 'cash' | 'bank';
     attendance_type?: 'in_person' | 'remote';
     guest_count?: number;
+    screenshot_url?: string;
   }): Promise<boolean> {
     if (supabaseClient && !id.startsWith('local-')) {
       try {
@@ -491,12 +498,13 @@ export const db = {
           .eq('id', id);
         
         // Resilience: Fallback if Supabase database lacks new columns
-        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.code === '42703')) {
+        if (error && (error.message?.includes('payment_method') || error.message?.includes('attendance_type') || error.message?.includes('guest_count') || error.message?.includes('screenshot_url') || error.code === '42703')) {
           console.warn("Supabase update failed due to missing columns. Retrying update with safe local fallback values.");
           const safeUpdates = { ...updates };
           delete safeUpdates.payment_method;
           delete safeUpdates.attendance_type;
           delete safeUpdates.guest_count;
+          delete safeUpdates.screenshot_url;
           const retryResult = await supabaseClient
             .from('wedding_contributions')
             .update(safeUpdates)

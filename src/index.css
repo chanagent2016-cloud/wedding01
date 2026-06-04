@@ -97,6 +97,40 @@ body {
   animation: float-gentle 4s infinite ease-in-out;
 }
 
+@keyframes logo-luxury {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 10px rgba(194, 145, 36, 0.15));
+  }
+  50% {
+    transform: translateY(-6px) scale(1.04);
+    filter: drop-shadow(0 14px 20px rgba(194, 145, 36, 0.35));
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 4px 10px rgba(194, 145, 36, 0.15));
+  }
+}
+
+@keyframes logo-pulse-slow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 2px 4px rgba(194, 145, 36, 0.1));
+  }
+  50% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 6px 12px rgba(194, 145, 36, 0.25));
+  }
+}
+
+.animate-logo-luxury {
+  animation: logo-luxury 4.5s infinite ease-in-out;
+}
+
+.animate-logo-pulse-slow {
+  animation: logo-pulse-slow 3s infinite ease-in-out;
+}
+
 .glow-text-gold {
   text-shadow: 0 0 8px rgba(247, 230, 184, 0.4);
 }
